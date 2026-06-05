@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PalmTek Agile Portfolio Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#222536;--border:#2e3248;--accent:#4f7cff;--accent2:#7c5cff;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;--text:#e8eaf6;--text2:#8b90a7;--text3:#5c607a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#auth-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:24px;background:radial-gradient(ellipse at 50% 0%,#1a2040 0%,var(--bg) 70%)}
+.auth-logo{display:flex;align-items:center;gap:12px}
+.auth-logo-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:22px}
+.auth-logo h1{font-size:22px;font-weight:700}
+.auth-logo span{color:var(--text2);font-weight:400}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 48px;text-align:center;width:420px;max-width:90vw}
+.auth-card h2{font-size:20px;font-weight:600;margin-bottom:8px}
+.auth-card p{color:var(--text2);font-size:14px;line-height:1.6;margin-bottom:28px}
+.btn-login{width:100%;padding:14px 24px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s}
+.btn-login:hover{opacity:.9}
+#dashboard{display:none;flex-direction:column;min-height:100vh}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:16px}
+.header-logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px}
+.header-title{font-size:15px;font-weight:600}
+.header-subtitle{font-size:12px;color:var(--text2)}
+.header-right{display:flex;align-items:center;gap:16px}
+.refresh-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.refresh-btn:hover{background:var(--border)}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);padding:5px 12px 5px 5px;border-radius:100px}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.user-name{font-size:13px;font-weight:500}
+.logout-btn{background:none;border:none;color:var(--text2);cursor:pointer;font-size:13px}
+.last-updated{font-size:12px;color:var(--text2);font-family:'DM Mono',monospace}
+.content{padding:24px;flex:1}
+.project-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.tab-btn{padding:8px 18px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:white}
+.tab-btn:hover:not(.active){background:var(--surface2);color:var(--text)}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
+.kpi-card.highlight::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.kpi-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:8px}
+.kpi-value{font-size:26px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:-1px}
+.kpi-delta{font-size:12px;margin-top:4px}
+.kpi-delta.up{color:var(--green)}.kpi-delta.down{color:var(--red)}.kpi-delta.neutral{color:var(--text2)}
+.kpi-icon{position:absolute;right:14px;top:14px;font-size:18px;opacity:.3}
+.section-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:1100px){.section-grid{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;overflow:hidden}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text2)}
+.card-badge{font-size:11px;padding:3px 8px;border-radius:6px;background:var(--surface2);color:var(--text2);font-family:'DM Mono',monospace}
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{text-align:left;padding:8px 10px;color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.data-table td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text)}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surface2)}
+.status{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500}
+.status::before{content:'';width:7px;height:7px;border-radius:50%}
+.status.green::before{background:var(--green);box-shadow:0 0 6px var(--green)}
+.status.yellow::before{background:var(--yellow);box-shadow:0 0 6px var(--yellow)}
+.status.red::before{background:var(--red);box-shadow:0 0 6px var(--red)}
+.status.blue::before{background:var(--accent);box-shadow:0 0 6px var(--accent)}
+.progress-wrap{display:flex;align-items:center;gap:10px}
+.progress-bar{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.progress-fill.green{background:var(--green)}.progress-fill.yellow{background:var(--yellow)}.progress-fill.red{background:var(--red)}.progress-fill.blue{background:var(--accent)}
+.progress-pct{font-size:12px;font-family:'DM Mono',monospace;color:var(--text2);min-width:36px;text-align:right}
+.loading-overlay{position:fixed;inset:0;background:rgba(15,17,23,.85);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--text2)}
+.error-banner{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#fca5a5;display:none}
+.perf-tag{font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600}
+.perf-tag.fast{background:rgba(34,197,94,.15);color:var(--green)}
+.perf-tag.normal{background:rgba(79,124,255,.15);color:var(--accent)}
+.perf-tag.slow{background:rgba(239,68,68,.15);color:var(--red)}
+.empty{text-align:center;padding:40px 20px;color:var(--text2);font-size:13px}
+.empty-icon{font-size:32px;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-logo">
+    <div class="auth-logo-icon">🌴</div>
+    <div><h1>PalmTek <span>Solutions</span></h1></div>
+  </div>
+  <div class="auth-card">
+    <h2>Agile Portfolio Dashboard</h2>
+    <p>Sign in with your PalmTek company account to view project metrics, team performance, and sprint data from Azure DevOps.</p>
+    <button class="btn-login" id="signin-btn">
+      <svg width="20" height="20" viewBox="0 0 21 21" fill="none"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg>
+      Sign in with Microsoft
+    </button>
+  </div>
+  <p style="font-size:12px;color:var(--text3)">Access restricted to @palmteksolution.com accounts</p>
+</div>
+
+<div class="loading-overlay" id="loading" style="display:none">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Loading...</div>
+</div>
+
+<div id="dashboard">
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">🌴</div>
+      <div><div class="header-title">Agile Portfolio Dashboard</div><div class="header-subtitle">PalmTek Solutions</div></div>
+    </div>
+    <div class="header-right">
+      <div class="last-updated" id="last-updated">—</div>
+      <button class="refresh-btn" id="refresh-btn">↻ Refresh</button>
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span class="user-name" id="user-name">...</span>
+        <button class="logout-btn" id="logout-btn">✕</button>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="error-banner" id="error-banner"></div>
+    <div class="project-tabs" id="project-tabs"></div>
+    <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="section-grid">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Initiative Status</span><span class="card-badge" id="initiative-count">—</span></div>
+        <div id="initiative-table-wrap"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Resource Allocation</span></div>
+        <div id="resource-table-wrap"></div>
+      </div>
+    </div>
+    <div class="section-grid" style="margin-top:16px">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Bug Status</span><span class="card-badge" id="bug-total">—</span></div>
+        <div style="display:flex;gap:20px;align-items:center">
+          <canvas id="bug-chart" width="160" height="160" style="flex-shrink:0"></canvas>
+          <div id="bug-legend" style="flex:1"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Team Performance</span></div>
+        <div id="team-perf-wrap"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="card-header"><span class="card-title">Weekly Activity</span><span class="card-badge" id="week-label">—</span></div>
+      <div id="weekly-table-wrap" style="overflow-x:auto"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const CFG = {
+  clientId: '0d973364-b101-468e-81a0-7d163d8ae4f4',
+  tenantId: '0602dee6-d765-462c-8f89-7276ba040d7c',
+  adoOrg:   'PalmtekSolution',
+  projects: ['Depository','e-PMS','e-PMMS','Team Hub'],
+  adoScope: '499b84ac-1321-427f-aa17-267ca6975798/user_impersonation',
+};
+CFG.redirectUri = location.origin + location.pathname;
+CFG.authUrl = `https://login.microsoftonline.com/${CFG.tenantId}/oauth2/v2.0/authorize`;
+CFG.tokenUrl = `https://login.microsoftonline.com/${CFG.tenantId}/oauth2/v2.0/token`;
+
+// ── STATE ───────────────────────────────────────────────────
+let accessToken = null;
+let activeProject = null;
+let bugChart = null;
+
+// ── PKCE HELPERS ────────────────────────────────────────────
+function rnd(n){const a=new Uint8Array(n);crypto.getRandomValues(a);return a}
+function b64url(buf){return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'')}
+async function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return buf}
+
+async function signIn(){
+  const verifier = b64url(rnd(32));
+  const challenge = b64url(await sha256(verifier));
+  const state = b64url(rnd(16));
+  sessionStorage.setItem('pkce_verifier', verifier);
+  sessionStorage.setItem('pkce_state', state);
+  const params = new URLSearchParams({
+    client_id: CFG.clientId,
+    response_type: 'code',
+    redirect_uri: CFG.redirectUri,
+    scope: `openid profile ${CFG.adoScope}`,
+    code_challenge: challenge,
+    code_challenge_method: 'S256',
+    state,
+    prompt: 'select_account',
+  });
+  location.href = CFG.authUrl + '?' + params;
+}
+
+async function handleCallback(code, state){
+  const savedState = sessionStorage.getItem('pkce_state');
+  if(state !== savedState){ showError('State mismatch. Please try again.'); return; }
+  const verifier = sessionStorage.getItem('pkce_verifier');
+  sessionStorage.removeItem('pkce_verifier');
+  sessionStorage.removeItem('pkce_state');
+  showLoading('Signing in...');
+  const body = new URLSearchParams({
+    client_id: CFG.clientId,
+    grant_type: 'authorization_code',
+    code,
+    redirect_uri: CFG.redirectUri,
+    code_verifier: verifier,
+    scope: `openid profile ${CFG.adoScope}`,
+  });
+  const r = await fetch(CFG.tokenUrl,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
+  const data = await r.json();
+  if(data.error){ hideLoading(); showError(data.error_description||data.error); return; }
+  accessToken = data.access_token;
+  sessionStorage.setItem('ado_token', accessToken);
+  // Clean URL
+  history.replaceState({}, '', CFG.redirectUri);
+  await showDashboard();
+}
+
+// ── INIT ────────────────────────────────────────────────────
+async function init(){
+  // Check for auth callback
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+  const state = params.get('state');
+  if(code && state){ await handleCallback(code, state); return; }
+  // Check stored token
+  const stored = sessionStorage.getItem('ado_token');
+  if(stored){ accessToken = stored; await showDashboard(); return; }
+  // Show login
+  hideLoading();
+  document.getElementById('signin-btn').onclick = signIn;
+}
+
+// ── DASHBOARD ───────────────────────────────────────────────
+async function showDashboard(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('dashboard').style.display='flex';
+  // Try to get user info
+  try{
+    const me = await fetch('https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=7.0',
+      {headers:{Authorization:'Bearer '+accessToken}});
+    if(me.ok){
+      const u = await me.json();
+      const name = u.displayName||u.emailAddress||'User';
+      document.getElementById('user-name').textContent = name.split(' ')[0];
+      document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+    }
+  }catch(e){}
+
+  document.getElementById('refresh-btn').onclick = loadDashboard;
+  document.getElementById('logout-btn').onclick = ()=>{ sessionStorage.removeItem('ado_token'); location.reload(); };
+
+  // Tabs
+  const tabsEl = document.getElementById('project-tabs');
+  tabsEl.innerHTML='';
+  const allBtn = document.createElement('button');
+  allBtn.className='tab-btn active'; allBtn.textContent='All Projects';
+  allBtn.onclick=()=>selectProject(null,allBtn);
+  tabsEl.appendChild(allBtn);
+  CFG.projects.forEach(p=>{
+    const b=document.createElement('button');
+    b.className='tab-btn'; b.textContent=p;
+    b.onclick=()=>selectProject(p,b);
+    tabsEl.appendChild(b);
+  });
+  await loadDashboard();
+}
+
+function selectProject(p,btn){
+  activeProject=p;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadDashboard();
+}
+
+// ── DATA FETCH ──────────────────────────────────────────────
+async function ado(path){
+  const r = await fetch(`https://dev.azure.com/${CFG.adoOrg}/${path}`,
+    {headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'}});
+  if(r.status===401){ sessionStorage.removeItem('ado_token'); location.reload(); }
+  if(!r.ok) throw new Error(r.status+' '+r.statusText);
+  return r.json();
+}
+
+async function wiql(project, query){
+  const r = await fetch(`https://dev.azure.com/${CFG.adoOrg}/${project}/_apis/wit/wiql?api-version=7.0`,
+    {method:'POST',headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({query})});
+  if(!r.ok) return [];
+  return (await r.json()).workItems||[];
+}
+
+async function getItems(project, ids, fields){
+  if(!ids.length) return [];
+  const f = fields.join(',');
+  const r = await fetch(`https://dev.azure.com/${CFG.adoOrg}/${project}/_apis/wit/workitems?ids=${ids.join(',')}&fields=${f}&api-version=7.0`,
+    {headers:{Authorization:'Bearer '+accessToken}});
+  if(!r.ok) return [];
+  return (await r.json()).value||[];
+}
+
+async function fetchProject(project){
+  try{
+    const [wids, bids, mems] = await Promise.all([
+      wiql(project,`SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject]='${project}' AND [System.WorkItemType] IN ('User Story','Task','Feature','Epic') AND [System.State]<>'Removed'`),
+      wiql(project,`SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject]='${project}' AND [System.WorkItemType]='Bug' AND [System.State]<>'Removed'`),
+      fetch(`https://dev.azure.com/${CFG.adoOrg}/_apis/projects/${project}/teams/${encodeURIComponent(project+' Team')}/members?api-version=7.0`,
+        {headers:{Authorization:'Bearer '+accessToken}}).then(r=>r.ok?r.json().then(d=>d.value||[]):Promise.resolve([])).catch(()=>[])
+    ]);
+    const [workItems, bugs] = await Promise.all([
+      getItems(project, wids.slice(0,200).map(w=>w.id), ['System.Id','System.Title','System.State','System.WorkItemType','Microsoft.VSTS.Scheduling.RemainingWork','Microsoft.VSTS.Scheduling.CompletedWork','System.AssignedTo','System.ChangedDate']),
+      getItems(project, bids.slice(0,500).map(w=>w.id), ['System.State','Microsoft.VSTS.Common.Priority'])
+    ]);
+    return {project, workItems, bugs, members: mems};
+  }catch(e){ console.warn(project,e); return {project,workItems:[],bugs:[],members:[]}; }
+}
+
+async function loadDashboard(){
+  showLoading('Fetching from Azure DevOps...');
+  hideError();
+  try{
+    const projects = activeProject ? [activeProject] : CFG.projects;
+    const all = await Promise.all(projects.map(fetchProject));
+    render(all);
+    document.getElementById('last-updated').textContent = 'Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){ showError(e.message); console.error(e); }
+  finally{ hideLoading(); }
+}
+
+// ── RENDER ──────────────────────────────────────────────────
+function render(all){
+  let totalItems=0,doneItems=0,totalRemaining=0,totalBugs=0;
+  let bugStates={}, memberMap={}, allWI=[];
+
+  all.forEach(({project,workItems,bugs,members})=>{
+    allWI = allWI.concat(workItems.map(w=>({...w,_project:project})));
+    totalItems += workItems.length;
+    doneItems += workItems.filter(w=>['Done','Closed','Resolved','Completed'].includes(w.fields?.['System.State'])).length;
+    workItems.forEach(w=>{ totalRemaining += w.fields?.['Microsoft.VSTS.Scheduling.RemainingWork']||0; });
+    totalBugs += bugs.length;
+    bugs.forEach(b=>{ const s=b.fields?.['System.State']||'Unknown'; bugStates[s]=(bugStates[s]||0)+1; });
+    members.forEach(m=>{ const n=m.identity?.displayName||'Unknown'; if(!memberMap[n]) memberMap[n]={name:n,projects:[],items:0,done:0}; memberMap[n].projects.push(project); });
+  });
+
+  allWI.forEach(w=>{
+    const a=w.fields?.['System.AssignedTo']?.displayName||'';
+    if(a&&memberMap[a]){ memberMap[a].items++; if(['Done','Closed','Resolved','Completed'].includes(w.fields?.['System.State'])) memberMap[a].done++; }
+  });
+
+  const pct = totalItems>0?Math.round(doneItems/totalItems*100):0;
+  const epics = all.reduce((a,{workItems})=>a+workItems.filter(w=>w.fields?.['System.WorkItemType']==='Epic'&&!['Done','Closed'].includes(w.fields?.['System.State'])).length,0);
+  const feats = all.reduce((a,{workItems})=>a+workItems.filter(w=>w.fields?.['System.WorkItemType']==='Feature'&&!['Done','Closed'].includes(w.fields?.['System.State'])).length,0);
+
+  // KPIs
+  document.getElementById('kpi-grid').innerHTML=
+    kpi('Portfolio',pct+'%',pct>=50?'↑ On track':'↓ Behind','up','✓',true)+
+    kpi('Remaining',Math.round(totalRemaining)+'h','hours left','neutral','⏱')+
+    kpi('Initiatives',feats,'active features','neutral','⚡')+
+    kpi('Epics',epics,'open','neutral','📋')+
+    kpi('Bugs',totalBugs,totalBugs>80?'↑ High':'↓ OK',totalBugs>80?'down':'up','🐛')+
+    kpi('Work Items',totalItems,doneItems+' done','neutral','📌');
+
+  // Features
+  const features=all.flatMap(({project,workItems})=>workItems.filter(w=>w.fields?.['System.WorkItemType']==='Feature').map(f=>({project,f})));
+  document.getElementById('initiative-count').textContent=features.length+' features';
+  const sc=s=>['Active','In Progress'].includes(s)?'blue':['Done','Closed'].includes(s)?'green':'yellow';
+  document.getElementById('initiative-table-wrap').innerHTML=features.length?`<table class="data-table"><thead><tr><th>Project</th><th>Feature</th><th>State</th></tr></thead><tbody>${features.slice(0,10).map(({project,f})=>`<tr><td style="color:var(--text2);font-size:12px">${project}</td><td>${(f.fields?.['System.Title']||'').substring(0,36)}…</td><td><span class="status ${sc(f.fields?.['System.State']||'')}">${f.fields?.['System.State']||'—'}</span></td></tr>`).join('')}</tbody></table>`:'<div class="empty"><div class="empty-icon">📋</div>No features found</div>';
+
+  // Resources
+  const rc=u=>u>=80?'red':u>=50?'yellow':'green';
+  document.getElementById('resource-table-wrap').innerHTML=`<table class="data-table"><thead><tr><th>Project</th><th>Members</th><th>Burned h</th><th>Util%</th></tr></thead><tbody>${all.map(({project,workItems,members})=>{const burned=Math.round(workItems.reduce((a,w)=>a+(w.fields?.['Microsoft.VSTS.Scheduling.CompletedWork']||0),0));const cap=members.length*60;const u=cap>0?Math.min(100,Math.round(burned/cap*100)):0;return`<tr><td>${project}</td><td style="font-family:'DM Mono',monospace">${members.length}</td><td style="font-family:'DM Mono',monospace">${burned}</td><td><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill ${rc(u)}" style="width:${u}%"></div></div><span class="progress-pct">${u}%</span></div></td></tr>`;}).join('')}</tbody></table>`;
+
+  // Bugs chart
+  document.getElementById('bug-total').textContent=totalBugs+' bugs';
+  const labels=Object.keys(bugStates),values=Object.values(bugStates);
+  const colors=['#ef4444','#f97316','#f59e0b','#22c55e','#4f7cff','#7c5cff','#8b90a7'];
+  if(bugChart) bugChart.destroy();
+  if(labels.length){
+    bugChart=new Chart(document.getElementById('bug-chart').getContext('2d'),{
+      type:'doughnut',
+      data:{labels,datasets:[{data:values,backgroundColor:colors.slice(0,labels.length),borderWidth:0,hoverOffset:4}]},
+      options:{cutout:'68%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1d27',titleColor:'#e8eaf6',bodyColor:'#8b90a7',borderColor:'#2e3248',borderWidth:1}},animation:{duration:800}}
+    });
+  }
+  document.getElementById('bug-legend').innerHTML=labels.map((l,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:3px;background:${colors[i]}"></div><span style="font-size:13px">${l}</span></div><span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--text2)">${values[i]}</span></div>`).join('');
+
+  // Team
+  const mems=Object.values(memberMap);
+  document.getElementById('team-perf-wrap').innerHTML=mems.length?`<table class="data-table"><thead><tr><th>Member</th><th>Projects</th><th>Done/Total</th><th>Perf</th></tr></thead><tbody>${mems.slice(0,8).map(m=>{const p2=m.items>0?Math.round(m.done/m.items*100):0;const p=p2>=70?{t:'Fast',c:'fast'}:p2>=30?{t:'Normal',c:'normal'}:{t:'Slow',c:'slow'};return`<tr><td>${m.name.split(' ').slice(0,2).join(' ')}</td><td style="font-size:12px;color:var(--text2)">${[...new Set(m.projects)].join(', ')}</td><td style="font-family:'DM Mono',monospace">${m.done}/${m.items}</td><td><span class="perf-tag ${p.c}">${p.t}</span></td></tr>`;}).join('')}</tbody></table>`:'<div class="empty"><div class="empty-icon">👥</div>No team data</div>';
+
+  // Weekly
+  const now=new Date();
+  const ws=new Date(now); ws.setDate(now.getDate()-((now.getDay()+6)%7)); ws.setHours(0,0,0,0);
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const dd=days.map((_,i)=>{const d=new Date(ws);d.setDate(ws.getDate()+i);return d;});
+  const wn=Math.ceil((((new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()))-new Date(Date.UTC(now.getFullYear(),0,1)))/86400000)+1)/7);
+  document.getElementById('week-label').textContent=`W${wn} · ${ws.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} – ${now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`;
+  const act={};
+  allWI.forEach(w=>{
+    const a=w.fields?.['System.AssignedTo']?.displayName||''; if(!a) return;
+    if(!act[a]) act[a]=Array(7).fill(0);
+    const cd=w.fields?.['System.ChangedDate']?new Date(w.fields['System.ChangedDate']):null;
+    if(cd){const idx=dd.findIndex(d=>d.toDateString()===cd.toDateString());if(idx>=0)act[a][idx]++;}
+  });
+  const ar=Object.entries(act).filter(([,v])=>v.some(x=>x>0));
+  document.getElementById('weekly-table-wrap').innerHTML=ar.length?`<table class="data-table" style="min-width:700px"><thead><tr><th>Member</th>${days.map((d,i)=>`<th>${d} ${dd[i].getDate()}</th>`).join('')}<th>Total</th></tr></thead><tbody>${ar.map(([name,counts])=>`<tr><td>${name.split(' ').slice(0,2).join(' ')}</td>${counts.map(c=>`<td style="font-family:'DM Mono',monospace;color:${c>0?'var(--text)':'var(--text3)'}">${c||'—'}</td>`).join('')}<td style="font-family:'DM Mono',monospace;font-weight:600">${counts.reduce((a,b)=>a+b,0)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty"><div class="empty-icon">📅</div>No activity this week</div>';
+}
+
+function kpi(l,v,d,dc,ic,h=false){return`<div class="kpi-card ${h?'highlight':''}"><div class="kpi-icon">${ic}</div><div class="kpi-label">${l}</div><div class="kpi-value">${v}</div><div class="kpi-delta ${dc}">${d}</div></div>`;}
+function showLoading(m){document.getElementById('loading').style.display='flex';document.getElementById('loading-text').textContent=m;}
+function hideLoading(){document.getElementById('loading').style.display='none';}
+function showError(m){const e=document.getElementById('error-banner');e.textContent='⚠ '+m;e.style.display='block';}
+function hideError(){document.getElementById('error-banner').style.display='none';}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
