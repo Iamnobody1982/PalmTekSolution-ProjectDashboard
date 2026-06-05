@@ -186,7 +186,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-he
   </div>
 </div>
 <script>
-var CFG={clientId:'0d973364-b101-468e-81a0-7d163d8ae4f4',tenantId:'0602dee6-d765-462c-8f89-7276ba040d7c',adoOrg:'PalmtekSolution',projects:['Depository','e-PMS','e-PMMS','Team Hub'],adoScope:'499b84ac-1321-427f-aa17-267ca6975798/user_impersonation'};
+var CFG={clientId:'0d973364-b101-468e-81a0-7d163d8ae4f4',tenantId:'0602dee6-d765-462c-8f89-7276ba040d7c',adoOrg:'PalmtekSolution',projects:[],adoScope:'499b84ac-1321-427f-aa17-267ca6975798/user_impersonation'};
 CFG.redirectUri=location.origin+location.pathname;
 CFG.authUrl='https://login.microsoftonline.com/'+CFG.tenantId+'/oauth2/v2.0/authorize';
 CFG.tokenUrl='https://login.microsoftonline.com/'+CFG.tenantId+'/oauth2/v2.0/token';
@@ -235,7 +235,24 @@ async function boot(){
   }catch(e){}
   document.getElementById('bref').onclick=loadAll;
   document.getElementById('bout').onclick=function(){sessionStorage.removeItem('t');location.reload();};
+  await discoverProjects();
   buildTabs();await loadAll();
+}
+
+
+async function discoverProjects(){
+  try{
+    var r=await fetch('https://dev.azure.com/'+CFG.adoOrg+'/_apis/projects?api-version=7.0&$top=50',{headers:{Authorization:'Bearer '+tok}});
+    if(r.ok){
+      var d=await r.json();
+      CFG.projects=(d.value||[]).map(function(p){return p.name;}).sort();
+      console.log('Projects found:',CFG.projects);
+    }
+  }catch(e){console.warn('Could not fetch projects:',e);}
+  if(!CFG.projects.length){
+    // fallback nếu API fail
+    CFG.projects=['Depository'];
+  }
 }
 
 function buildTabs(){
