@@ -464,75 +464,137 @@ async function fetchProj(proj){
 }
 
 function transformProj(proj,items,mems){
-  var feats=items.filter(function(w){return gs(w,'System.WorkItemType')==='Feature';});
-  var epics=items.filter(function(w){return gs(w,'System.WorkItemType')==='Epic';});
-  var stories=items.filter(function(w){return['User Story','Task'].indexOf(gs(w,'System.WorkItemType'))>=0;});
-  var bugs=items.filter(function(w){return gs(w,'System.WorkItemType')==='Bug';});
+  // PalmTek ADO hierarchy: Epic (=Initiative) > Feature (=Epic) > User Story > Task
+  // L1 = Epic      → shown as "Initiative"
+  // L2 = Feature   → shown as "Epic"
+  // L3 = User Story/Task → shown as items
 
-  var featData=feats.map(function(f){
-    var fEpics=epics.filter(function(e){return gf(e,'System.Parent')===f.id;});
-    var epicData=fEpics.map(function(ep){
-      var eSt=stories.filter(function(s){return gf(s,'System.Parent')===ep.id;});
-      var eDone=eSt.filter(isDone).length;
-      var ePct=eSt.length?Math.round(eDone/eSt.length*100):(isDone(ep)?100:0);
-      var epSt=ePct>=100?'Done':eSt.some(function(s){return gs(s,'System.State')==='Active'||gs(s,'System.State')==='In Progress';})?'Active':'New';
-      return{
-        title:gs(ep,'System.Title'),state:epSt,pct:ePct,
-        todo:eSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
-        dev:eSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
-        test:eSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
-        done:eDone,total:Math.max(eSt.length,1),
-        oe:Math.round(eSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate');},0)),
-        cw:Math.round(eSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.CompletedWork');},0)),
-        rw:Math.round(eSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.RemainingWork');},0)),
-        items:eSt.slice(0,10).map(function(s){
-          var sp=isDone(s)?100:gs(s,'System.State')==='Active'||gs(s,'System.State')==='In Progress'?50:0;
-          var sOE=Math.round(gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate'));
-          var sCW=Math.round(gf(s,'Microsoft.VSTS.Scheduling.CompletedWork'));
-          var sRW=Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork'));
-          return{title:gs(s,'System.Title'),state:gs(s,'System.State'),pct:sp,
-            todo:isDone(s)?0:gs(s,'System.State')==='New'||gs(s,'System.State')==='To Do'?1:0,
-            dev:gs(s,'System.State')==='Active'||gs(s,'System.State')==='In Progress'?1:0,
-            test:gs(s,'System.State')==='Testing'?1:0,
-            done:isDone(s)?1:0,total:1,oe:sOE,cw:sCW,rw:sRW,rw_a:sRW};
+  var epics   = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Epic'; });
+  var feats   = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Feature'; });
+  var stories = items.filter(function(w){ return ['User Story','Task'].indexOf(gs(w,'System.WorkItemType'))>=0; });
+  var bugs    = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Bug'; });
+
+  // Build parent map for quick lookup
+  var parentOf={};
+  items.forEach(function(w){ parentOf[w.id]=gf(w,'System.Parent'); });
+
+  // Walk up ancestry to find Epic ancestor of any item
+  function findEpicAncestor(id){
+    var visited={},cur=id;
+    while(cur && !visited[cur]){
+      visited[cur]=true;
+      var item=items.find(function(w){return w.id===cur;});
+      if(!item) break;
+      if(gs(item,'System.WorkItemType')==='Epic') return item;
+      cur=gf(item,'System.Parent');
+    }
+    return null;
+  }
+
+  // L1: Epic (Initiative) → L2: Feature (Epic) → L3: User Story/Task
+  var initData = epics.map(function(ep){
+    var epId = ep.id;
+    // Features whose parent is this Epic
+    var epFeats = feats.filter(function(f){ return gf(f,'System.Parent')===epId; });
+
+    var epicData = epFeats.map(function(f){
+      var fId = f.id;
+      // Stories whose parent is this Feature
+      var fSt = stories.filter(function(s){ return gf(s,'System.Parent')===fId; });
+      var fDone = fSt.filter(isDone).length;
+      var fPct  = fSt.length ? Math.round(fDone/fSt.length*100) : (isDone(f)?100:0);
+      var fSc   = fPct>=100?'Done': fSt.some(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}) ? 'Active' : gs(f,'System.State');
+
+      return {
+        title: gs(f,'System.Title'), state: fSc, pct: fPct,
+        todo:  fSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
+        dev:   fSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
+        test:  fSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
+        done:  fDone,
+        total: Math.max(fSt.length,1),
+        oe:    Math.round(fSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate');},0) + gf(f,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+        cw:    Math.round(fSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.CompletedWork');},0)    + gf(f,'Microsoft.VSTS.Scheduling.CompletedWork')),
+        rw:    Math.round(fSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.RemainingWork');},0)    + gf(f,'Microsoft.VSTS.Scheduling.RemainingWork')),
+        items: fSt.slice(0,10).map(function(s){
+          var sp  = isDone(s)?100:gs(s,'System.State')==='Active'||gs(s,'System.State')==='In Progress'?50:0;
+          var sOE = Math.round(gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate'));
+          var sCW = Math.round(gf(s,'Microsoft.VSTS.Scheduling.CompletedWork'));
+          var sRW = Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork'));
+          var sst = gs(s,'System.State');
+          return { title:gs(s,'System.Title'), state:sst, pct:sp,
+            todo:  (sst==='New'||sst==='To Do')?1:0,
+            dev:   (sst==='Active'||sst==='In Progress')?1:0,
+            test:  sst==='Testing'?1:0,
+            done:  isDone(s)?1:0, total:1,
+            oe:sOE, cw:sCW, rw:sRW, rw_a:sRW };
         })
       };
     });
-    var allSt=fEpics.reduce(function(a,ep){return a.concat(stories.filter(function(s){return gf(s,'System.Parent')===ep.id;}));},[]);
-    var fDone=allSt.filter(isDone).length,fTotal=Math.max(allSt.length,1);
-    return{title:gs(f,'System.Title'),state:gs(f,'System.State'),
-      todo:allSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
-      dev:allSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
-      test:allSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
-      done:fDone,total:fTotal,
-      oe:Math.round(allSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate');},0)),
-      cw:Math.round(allSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.CompletedWork');},0)),
-      rw:Math.round(allSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.RemainingWork');},0)),
-      epics:epicData};
+
+    // Aggregate all child stories under this Epic
+    var allSt = epFeats.reduce(function(a,f){
+      return a.concat(stories.filter(function(s){return gf(s,'System.Parent')===f.id;}));
+    },[]);
+    var epDone = allSt.filter(isDone).length;
+    var epTotal = Math.max(allSt.length, 1);
+    var epPct   = Math.round(epDone/epTotal*100);
+    var epSt    = gs(ep,'System.State');
+
+    // OE/CW/RW: sum from all child stories + features + epic itself
+    function sumField(arr, field){return arr.reduce(function(a,w){return a+gf(w,field);},0);}
+    var allChildren = epFeats.concat(allSt);
+
+    return {
+      title: gs(ep,'System.Title'), state: epSt, pct: epPct,
+      todo:  allSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
+      dev:   allSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
+      test:  allSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
+      done:  epDone, total: epTotal,
+      oe:  Math.round(sumField(allChildren,'Microsoft.VSTS.Scheduling.OriginalEstimate') + gf(ep,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+      cw:  Math.round(sumField(allChildren,'Microsoft.VSTS.Scheduling.CompletedWork')    + gf(ep,'Microsoft.VSTS.Scheduling.CompletedWork')),
+      rw:  Math.round(sumField(allChildren,'Microsoft.VSTS.Scheduling.RemainingWork')    + gf(ep,'Microsoft.VSTS.Scheduling.RemainingWork')),
+      epics: epicData   // Feature children = "Epics" in UI
+    };
   });
 
-  var bugSt={};bugs.forEach(function(b){var s=gs(b,'System.State');bugSt[s]=(bugSt[s]||0)+1;});
-  var allWI=feats.concat(epics).concat(stories);
-  var burned=Math.round(allWI.reduce(function(a,w){return a+gf(w,'Microsoft.VSTS.Scheduling.CompletedWork');},0));
-  var rw=Math.round(allWI.reduce(function(a,w){return a+gf(w,'Microsoft.VSTS.Scheduling.RemainingWork');},0));
-  var oe=Math.round(allWI.reduce(function(a,w){return a+gf(w,'Microsoft.VSTS.Scheduling.OriginalEstimate');},0));
-  var allDone=allWI.filter(isDone).length;
-  var pct=allWI.length>0?Math.round(allDone/allWI.length*100):0;
-  var cap=mems.length*60*10;
-  var util=cap>0?Math.min(100,Math.round(burned/cap*100)):0;
+  // Aggregate for project-level stats
+  var allWorkItems = epics.concat(feats).concat(stories);
+  var burned  = Math.round(allWorkItems.reduce(function(a,w){return a+gf(w,'Microsoft.VSTS.Scheduling.CompletedWork');},0));
+  var rw      = Math.round(allWorkItems.reduce(function(a,w){return a+gf(w,'Microsoft.VSTS.Scheduling.RemainingWork');},0));
+  var oe      = Math.round(allWorkItems.reduce(function(a,w){return a+gf(w,'Microsoft.VSTS.Scheduling.OriginalEstimate');},0));
+  var allDone = allWorkItems.filter(isDone).length;
+  var pct     = allWorkItems.length>0 ? Math.round(allDone/allWorkItems.length*100) : 0;
+  var cap     = mems.length*60*10;
+  var util    = cap>0 ? Math.min(100,Math.round(burned/cap*100)) : 0;
 
-  // Critical bugs per epic
-  var critBugs=epics.map(function(ep){
-    var eb=bugs.filter(function(b){return gf(b,'System.Parent')===ep.id;});
-    var open=eb.filter(function(b){return!isDone(b);}).length;
-    return{epic:gs(ep,'System.Title'),open:open,critical:eb.filter(function(b){return gf(b,'Microsoft.VSTS.Common.Priority')<=1&&!isDone(b);}).length,total:eb.length};
-  }).filter(function(x){return x.total>0;}).sort(function(a,b){return b.open-a.open;}).slice(0,8);
+  // Bug states
+  var bugSt={};
+  bugs.forEach(function(b){var s=gs(b,'System.State');bugSt[s]=(bugSt[s]||0)+1;});
 
-  return{proj:proj,
-    wi:{total:allWI.length,done:allDone,pct:pct,oe:oe,cw:burned,rw:rw,features:featData},
-    bi:{total:bugs.length,states:bugSt},
-    members:mems.length,capacity:cap,burned:burned,remaining:rw,util:util,
-    critical_bugs:critBugs,_mems:mems,_items:items};
+  // Critical bugs per Epic — walk up from bug to find Epic ancestor
+  var epicBugMap={};
+  bugs.forEach(function(b){
+    var ancestor = findEpicAncestor(gf(b,'System.Parent'));
+    if(!ancestor) return;
+    var eid = ancestor.id;
+    if(!epicBugMap[eid]) epicBugMap[eid]={epic:gs(ancestor,'System.Title'),open:0,critical:0,total:0};
+    epicBugMap[eid].total++;
+    if(!isDone(b)) epicBugMap[eid].open++;
+    if(gf(b,'Microsoft.VSTS.Common.Priority')<=1 && !isDone(b)) epicBugMap[eid].critical++;
+  });
+  var critBugs = Object.values(epicBugMap)
+    .filter(function(x){return x.total>0;})
+    .sort(function(a,b){return b.open-a.open;})
+    .slice(0,8);
+
+  return {
+    proj: proj,
+    wi: { total:allWorkItems.length, done:allDone, pct:pct, oe:oe, cw:burned, rw:rw, features:initData },
+    bi: { total:bugs.length, states:bugSt },
+    members:mems.length, capacity:cap, burned:burned, remaining:rw, util:util,
+    critical_bugs: critBugs,
+    _mems: mems, _items: items
+  };
 }
 
 // ── TEAM DATA (Cycle Time from state change dates) ──
@@ -649,7 +711,17 @@ function renderKPIs(data){
     kpiCard('ib','bb',ADO.cycle,'Avg Cycle Time',avgCycleTime(),'days','—','ne')+
     kpiCard('ip','bp',ADO.lead,'Avg Lead Time','—','days','—','ne');
 }
-function countEpics(data){var n=0;data.forEach(function(d){d.wi.features.forEach(function(f){n+=(f.epics||[]).filter(function(e){return e.state!=='Done';}).length;});});return n;}
+function countEpics(data){
+  // features = Initiatives (Epics in ADO), epics = Features in ADO
+  var n=0;
+  data.forEach(function(d){
+    (d.wi.features||[]).forEach(function(init){
+      // count non-done Features (shown as Epics in UI)
+      n+=(init.epics||[]).filter(function(e){return e.state!=='Done';}).length;
+    });
+  });
+  return n;
+}
 function avgCycleTime(){if(!_MOCK||!_MOCK.team)return'—';var t=_MOCK.team.filter(function(m){return m.cycle&&m.cycle!=='-';});if(!t.length)return'—';return Math.round(t.reduce(function(a,m){return a+m.cycle;},0)/t.length*10)/10;}
 function delta(cur,prev,unit,inv){
   if(prev===null||prev===undefined)return'—';
