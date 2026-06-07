@@ -55,7 +55,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-s
 .ubout:hover{color:#fff}
 
 /* CONTENT */
-.cnt{padding:14px 16px;max-width:1800px;margin:0 auto}
+.cnt{padding:14px 16px 0 16px;max-width:1800px;margin:0 auto}
 .errb{background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#dc2626;display:none;font-weight:500}
 .tabrow{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
 .tab{padding:7px 18px;border-radius:22px;border:1.5px solid var(--bdr);background:#fff;color:var(--txt2);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;box-shadow:var(--sh)}
@@ -65,7 +65,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-s
 .card{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;box-shadow:var(--sh)}
 
 /* KPI STRIP */
-.krow{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:12px}
+.krow{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:12px}
 @media(max-width:1500px){.krow{grid-template-columns:repeat(4,1fr)}}
 .kc{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;box-shadow:var(--sh);position:relative;overflow:hidden}
 .kc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:8px}
@@ -203,6 +203,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-s
 .l3-ic{width:18px;height:18px;border-radius:4px;background:#E0F2FE;display:flex;align-items:center;justify-content:center;flex-shrink:0}.l3-ic svg{width:11px;height:11px}
 .l3-title{font-size:12px;color:var(--txt2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .empty{text-align:center;padding:24px;color:var(--txt3);font-size:13px}
+
+/* FOOTER */
+.footer{background:#fff;border-top:1px solid var(--bdr);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-size:11px;color:var(--txt3)}
+.footer-left{display:flex;align-items:center;gap:12px}
+.footer-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block}
+.footer-right{display:flex;align-items:center;gap:16px}
 </style>
 </head>
 <body>
@@ -285,7 +291,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-s
             <div id="bleg" style="width:100%"></div>
           </div>
         </div>
-        <div class="card"><div class="sec">&#128680; Top 10 Epics by Open Bugs</div><div style="overflow-y:auto;max-height:340px" id="crit-tbl"></div></div>
+        <div class="card"><div class="sec">&#128680; Top 10 Epics by Open Bugs</div><div style="overflow-x:auto" id="crit-tbl"></div></div>
         <div class="card"><div class="sec">&#127942; Team Delivery Performance</div><div style="overflow-x:auto" id="ttbl"></div></div>
       </div>
       <div class="card">
@@ -297,6 +303,21 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-s
       </div>
     </div>
     <div id="proj-views"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer" id="footer">
+    <div class="footer-left">
+      <span class="footer-dot"></span>
+      <span>Connected to <b>Azure DevOps</b> — PalmtekSolution</span>
+      <span style="color:var(--bdr2)">|</span>
+      <span id="footer-updated">Last updated: —</span>
+    </div>
+    <div class="footer-right">
+      <span>Organization: <b>PalmtekSolution</b></span>
+      <span style="color:var(--bdr2)">|</span>
+      <span>PalmTek Solution JSC &copy; 2026</span>
+    </div>
   </div>
 </div>
 
@@ -437,7 +458,10 @@ async function loadAll(){
 
     // Update header
     var now=new Date();var wn=gwn(now);
-    document.getElementById('hdate').textContent='Data as of: '+now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'  '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    var nowStr=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'  '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('hdate').textContent='Data as of: '+nowStr;
+    var feEl=document.getElementById('footer-updated');if(feEl)feEl.textContent='Last updated: '+nowStr;
+    var _SKIP_='Data as of: '+now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'  '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('hcal').innerHTML='<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="13" rx="1.5" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/><path d="M1 6h14" stroke="rgba(255,255,255,.7)" stroke-width="1"/></svg> Calendar Week W'+wn[1];
 
     buildTabs();buildProjViews();buildWkOpts();renderAll(_MOCK.data);
@@ -449,7 +473,7 @@ async function loadAll(){
 async function fetchProj(proj){
   try{
     var FIELDS=['System.Id','System.Title','System.State','System.WorkItemType','System.AssignedTo','System.ChangedDate','System.CreatedDate','System.IterationPath','System.Parent','Microsoft.VSTS.Scheduling.RemainingWork','Microsoft.VSTS.Scheduling.OriginalEstimate','Microsoft.VSTS.Scheduling.CompletedWork','Microsoft.VSTS.Common.ActivatedDate','Microsoft.VSTS.Common.ResolvedDate','Microsoft.VSTS.Common.ClosedDate','Microsoft.VSTS.Common.Priority'];
-    var wiql="SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject]='"+proj+"' AND [System.WorkItemType] IN ('Feature','Epic','User Story','Task','Bug') AND [System.State]<>'Removed' ORDER BY [System.Id]";
+    var wiql="SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject]='"+proj+"' AND [System.WorkItemType] IN ('Initiative','Epic','Feature','User Story','Task','Bug') AND [System.State]<>'Removed' ORDER BY [System.Id]";
     var wr=await apPost(proj+'/_apis/wit/wiql?api-version=7.0',{query:wiql});
     var mR=await apGet('_apis/projects/'+proj+'/teams/'+encodeURIComponent(proj+' Team')+'/members?api-version=7.0');
     var ids=(wr&&wr.workItems?wr.workItems:[]).map(function(w){return w.id;});
@@ -464,145 +488,191 @@ async function fetchProj(proj){
 }
 
 function transformProj(proj,items,mems){
-  // PalmTek ADO hierarchy: Epic (=Initiative) > Feature (=Epic) > User Story > Task
-  // L1 = Epic      → shown as "Initiative"
-  // L2 = Feature   → shown as "Epic"
-  // L3 = User Story/Task → shown as items
+  // PalmTek ADO hierarchy: Initiative > Epic > Feature > User Story/Task
+  // L1 shown as "Initiative", L2 as "Epic", L3 as "Feature", L4 as items
 
-  var epics   = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Epic'; });
-  var feats   = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Feature'; });
-  var stories = items.filter(function(w){ return ['User Story','Task'].indexOf(gs(w,'System.WorkItemType'))>=0; });
-  var bugs    = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Bug'; });
+  var EXCL_MEMBER = 'TRAN GIANG BAO HUNG';
 
-  // Build parent map for quick lookup
-  var parentOf={};
-  items.forEach(function(w){ parentOf[w.id]=gf(w,'System.Parent'); });
+  var initiatives = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Initiative'; });
+  var epics       = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Epic'; });
+  var features    = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Feature'; });
+  var stories     = items.filter(function(w){ return ['User Story','Task'].indexOf(gs(w,'System.WorkItemType'))>=0; });
+  var bugs        = items.filter(function(w){ return gs(w,'System.WorkItemType')==='Bug'; });
 
-  // Walk up ancestry to find Epic ancestor of any item
-  function findEpicAncestor(id){
-    var visited={},cur=id;
-    while(cur && !visited[cur]){
-      visited[cur]=true;
-      var item=items.find(function(w){return w.id===cur;});
-      if(!item) break;
-      if(gs(item,'System.WorkItemType')==='Epic') return item;
-      cur=gf(item,'System.Parent');
+  // If no Initiative type exists in this org, fall back to Epic as L1
+  var useEpicAsInit = initiatives.length === 0;
+  if(useEpicAsInit){
+    initiatives = epics;
+    epics = features;
+    features = stories;
+    stories = [];
+  }
+
+  // Parent map for ancestor walk
+  var itemById = {};
+  items.forEach(function(w){ itemById[w.id]=w; });
+
+  function getParent(id){ var w=itemById[id]; return w?gf(w,'System.Parent'):0; }
+  function findAncestorByType(startId, type){
+    var cur=startId, visited={}, limit=10;
+    while(cur && limit-->0){
+      if(visited[cur]) break; visited[cur]=true;
+      var w=itemById[cur];
+      if(!w) break;
+      if(gs(w,'System.WorkItemType')===type) return w;
+      cur=gf(w,'System.Parent');
     }
     return null;
   }
 
-  // L1: Epic (Initiative) → L2: Feature (Epic) → L3: User Story/Task
-  var initData = epics.map(function(ep){
-    var epId = ep.id;
-    // Features whose parent is this Epic
-    var epFeats = feats.filter(function(f){ return gf(f,'System.Parent')===epId; });
+  function sumF(arr,field){ return arr.reduce(function(a,w){return a+gf(w,field);},0); }
+  function stOf(pct,state){ return pct>=100?'Done': (state==='Active'||state==='In Progress')?'Active':state; }
+  function pctOf(done,total){ return total>0?Math.round(done/total*100):0; }
 
-    var epicData = epFeats.map(function(f){
-      var fId = f.id;
-      // Stories whose parent is this Feature
-      var fSt = stories.filter(function(s){ return gf(s,'System.Parent')===fId; });
-      var fDone = fSt.filter(isDone).length;
-      var fPct  = fSt.length ? Math.round(fDone/fSt.length*100) : (isDone(f)?100:0);
-      var fSc   = fPct>=100?'Done': fSt.some(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}) ? 'Active' : gs(f,'System.State');
+  // Build L1 (Initiative) → L2 (Epic) → L3 (Feature) → L4 (Story)
+  var initData = initiatives.map(function(init){
+    var initId = init.id;
+
+    // L2: Epics whose parent = this Initiative
+    var childEpics = epics.filter(function(e){ return gf(e,'System.Parent')===initId; });
+
+    var epicData = childEpics.map(function(ep){
+      var epId = ep.id;
+
+      // L3: Features whose parent = this Epic
+      var childFeats = features.filter(function(f){ return gf(f,'System.Parent')===epId; });
+
+      // L4 items: Stories whose parent = one of these Features
+      var allStories = childFeats.reduce(function(a,f){
+        return a.concat(stories.filter(function(s){return gf(s,'System.Parent')===f.id;}));
+      },[]);
+
+      var epDone  = allStories.filter(isDone).length;
+      var epTotal = Math.max(allStories.length, 1);
+      var epPct   = pctOf(epDone, epTotal);
+
+      // Build Feature rows (L3)
+      var featData = childFeats.map(function(f){
+        var fId = f.id;
+        var fSt = stories.filter(function(s){return gf(s,'System.Parent')===fId;});
+        var fDone = fSt.filter(isDone).length;
+        var fTotal = Math.max(fSt.length,1);
+        var fPct = pctOf(fDone, fTotal);
+        var fState = stOf(fPct, gs(f,'System.State'));
+        var sst_map = function(st){ return st==='New'||st==='To Do'?'todo':st==='Active'||st==='In Progress'?'dev':st==='Testing'?'test':isDone({fields:{'System.State':st}})?'done':'todo'; };
+        return {
+          title:gs(f,'System.Title'), state:fState, pct:fPct,
+          todo:  fSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
+          dev:   fSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
+          test:  fSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
+          done:  fDone, total: fTotal,
+          oe: Math.round(sumF(fSt,'Microsoft.VSTS.Scheduling.OriginalEstimate')+gf(f,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+          cw: Math.round(sumF(fSt,'Microsoft.VSTS.Scheduling.CompletedWork')   +gf(f,'Microsoft.VSTS.Scheduling.CompletedWork')),
+          rw: Math.round(sumF(fSt,'Microsoft.VSTS.Scheduling.RemainingWork')   +gf(f,'Microsoft.VSTS.Scheduling.RemainingWork')),
+          items: fSt.slice(0,10).map(function(s){
+            var sp=isDone(s)?100:gs(s,'System.State')==='Active'||gs(s,'System.State')==='In Progress'?50:0;
+            var sst=gs(s,'System.State');
+            return{title:gs(s,'System.Title'),state:sst,pct:sp,
+              todo:(sst==='New'||sst==='To Do')?1:0,dev:(sst==='Active'||sst==='In Progress')?1:0,
+              test:sst==='Testing'?1:0,done:isDone(s)?1:0,total:1,
+              oe:Math.round(gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+              cw:Math.round(gf(s,'Microsoft.VSTS.Scheduling.CompletedWork')),
+              rw:Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork')),rw_a:Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork'))};
+          })
+        };
+      });
 
       return {
-        title: gs(f,'System.Title'), state: fSc, pct: fPct,
-        todo:  fSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
-        dev:   fSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
-        test:  fSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
-        done:  fDone,
-        total: Math.max(fSt.length,1),
-        oe:    Math.round(fSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate');},0) + gf(f,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
-        cw:    Math.round(fSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.CompletedWork');},0)    + gf(f,'Microsoft.VSTS.Scheduling.CompletedWork')),
-        rw:    Math.round(fSt.reduce(function(a,s){return a+gf(s,'Microsoft.VSTS.Scheduling.RemainingWork');},0)    + gf(f,'Microsoft.VSTS.Scheduling.RemainingWork')),
-        items: fSt.slice(0,10).map(function(s){
-          var sp  = isDone(s)?100:gs(s,'System.State')==='Active'||gs(s,'System.State')==='In Progress'?50:0;
-          var sOE = Math.round(gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate'));
-          var sCW = Math.round(gf(s,'Microsoft.VSTS.Scheduling.CompletedWork'));
-          var sRW = Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork'));
-          var sst = gs(s,'System.State');
-          return { title:gs(s,'System.Title'), state:sst, pct:sp,
-            todo:  (sst==='New'||sst==='To Do')?1:0,
-            dev:   (sst==='Active'||sst==='In Progress')?1:0,
-            test:  sst==='Testing'?1:0,
-            done:  isDone(s)?1:0, total:1,
-            oe:sOE, cw:sCW, rw:sRW, rw_a:sRW };
-        })
+        title:gs(ep,'System.Title'), state:stOf(epPct,gs(ep,'System.State')), pct:epPct,
+        todo: allStories.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
+        dev:  allStories.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
+        test: allStories.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
+        done: epDone, total: epTotal,
+        oe: Math.round(sumF(childFeats,'Microsoft.VSTS.Scheduling.OriginalEstimate')+sumF(allStories,'Microsoft.VSTS.Scheduling.OriginalEstimate')+gf(ep,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+        cw: Math.round(sumF(childFeats,'Microsoft.VSTS.Scheduling.CompletedWork')   +sumF(allStories,'Microsoft.VSTS.Scheduling.CompletedWork')   +gf(ep,'Microsoft.VSTS.Scheduling.CompletedWork')),
+        rw: Math.round(sumF(childFeats,'Microsoft.VSTS.Scheduling.RemainingWork')   +sumF(allStories,'Microsoft.VSTS.Scheduling.RemainingWork')   +gf(ep,'Microsoft.VSTS.Scheduling.RemainingWork')),
+        epics: featData   // L3 features shown as sub-items in accordion
       };
     });
 
-    // Aggregate all child stories under this Epic
-    var allSt = epFeats.reduce(function(a,f){
-      return a.concat(stories.filter(function(s){return gf(s,'System.Parent')===f.id;}));
+    // Aggregate all descendants
+    var allDesc = childEpics.reduce(function(a,ep){
+      var cf=features.filter(function(f){return gf(f,'System.Parent')===ep.id;});
+      var cs=cf.reduce(function(b,f){return b.concat(stories.filter(function(s){return gf(s,'System.Parent')===f.id;}));},[]);
+      return a.concat(cf).concat(cs);
     },[]);
-    var epDone = allSt.filter(isDone).length;
-    var epTotal = Math.max(allSt.length, 1);
-    var epPct   = Math.round(epDone/epTotal*100);
-    var epSt    = gs(ep,'System.State');
-
-    // OE/CW/RW: sum from all child stories + features + epic itself
-    function sumField(arr, field){return arr.reduce(function(a,w){return a+gf(w,field);},0);}
-    var allChildren = epFeats.concat(allSt);
+    var iDone  = allDesc.filter(isDone).length;
+    var iTotal = Math.max(allDesc.length, 1);
+    var iPct   = pctOf(iDone, iTotal);
 
     return {
-      title: gs(ep,'System.Title'), state: epSt, pct: epPct,
-      todo:  allSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
-      dev:   allSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
-      test:  allSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
-      done:  epDone, total: epTotal,
-      oe:  Math.round(sumField(allChildren,'Microsoft.VSTS.Scheduling.OriginalEstimate') + gf(ep,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
-      cw:  Math.round(sumField(allChildren,'Microsoft.VSTS.Scheduling.CompletedWork')    + gf(ep,'Microsoft.VSTS.Scheduling.CompletedWork')),
-      rw:  Math.round(sumField(allChildren,'Microsoft.VSTS.Scheduling.RemainingWork')    + gf(ep,'Microsoft.VSTS.Scheduling.RemainingWork')),
-      epics: epicData   // Feature children = "Epics" in UI
+      title: gs(init,'System.Title'), state: gs(init,'System.State'), pct: iPct,
+      todo: allDesc.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
+      dev:  allDesc.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
+      test: allDesc.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
+      done: iDone, total: iTotal,
+      oe: Math.round(sumF(allDesc,'Microsoft.VSTS.Scheduling.OriginalEstimate')+gf(init,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+      cw: Math.round(sumF(allDesc,'Microsoft.VSTS.Scheduling.CompletedWork')   +gf(init,'Microsoft.VSTS.Scheduling.CompletedWork')),
+      rw: Math.round(sumF(allDesc,'Microsoft.VSTS.Scheduling.RemainingWork')   +gf(init,'Microsoft.VSTS.Scheduling.RemainingWork')),
+      epics: epicData
     };
   });
 
-  // Aggregate for project-level stats
-  var allWorkItems = epics.concat(feats).concat(stories);
-  var burned  = Math.round(allWorkItems.reduce(function(a,w){return a+gf(w,'Microsoft.VSTS.Scheduling.CompletedWork');},0));
-  var rw      = Math.round(allWorkItems.reduce(function(a,w){return a+gf(w,'Microsoft.VSTS.Scheduling.RemainingWork');},0));
-  var oe      = Math.round(allWorkItems.reduce(function(a,w){return a+gf(w,'Microsoft.VSTS.Scheduling.OriginalEstimate');},0));
-  var allDone = allWorkItems.filter(isDone).length;
-  var pct     = allWorkItems.length>0 ? Math.round(allDone/allWorkItems.length*100) : 0;
+  // Project-level aggregates
+  var allWI = initiatives.concat(epics).concat(features).concat(stories);
+  var burned  = Math.round(sumF(allWI,'Microsoft.VSTS.Scheduling.CompletedWork'));
+  var rw      = Math.round(sumF(allWI,'Microsoft.VSTS.Scheduling.RemainingWork'));
+  var oe      = Math.round(sumF(allWI,'Microsoft.VSTS.Scheduling.OriginalEstimate'));
+  var allDone = allWI.filter(isDone).length;
+  var pct     = allWI.length>0?Math.round(allDone/allWI.length*100):0;
   var cap     = mems.length*60*10;
-  var util    = cap>0 ? Math.min(100,Math.round(burned/cap*100)) : 0;
+  var util    = cap>0?Math.min(100,Math.round(burned/cap*100)):0;
 
   // Bug states
   var bugSt={};
   bugs.forEach(function(b){var s=gs(b,'System.State');bugSt[s]=(bugSt[s]||0)+1;});
 
-  // Critical bugs per Epic — walk up from bug to find Epic ancestor
+  // Top Epics by Open Bugs: walk up from bug to find Epic ancestor
   var epicBugMap={};
   bugs.forEach(function(b){
-    var ancestor = findEpicAncestor(gf(b,'System.Parent'));
+    var ancestor=findAncestorByType(gf(b,'System.Parent'),'Epic');
+    if(!ancestor) ancestor=findAncestorByType(gf(b,'System.Parent'),'Feature');
     if(!ancestor) return;
-    var eid = ancestor.id;
+    var eid=ancestor.id;
     if(!epicBugMap[eid]) epicBugMap[eid]={epic:gs(ancestor,'System.Title'),open:0,critical:0,total:0};
     epicBugMap[eid].total++;
     if(!isDone(b)) epicBugMap[eid].open++;
-    if(gf(b,'Microsoft.VSTS.Common.Priority')<=1 && !isDone(b)) epicBugMap[eid].critical++;
+    if(gf(b,'Microsoft.VSTS.Common.Priority')<=1&&!isDone(b)) epicBugMap[eid].critical++;
   });
-  var critBugs = Object.values(epicBugMap)
+  var critBugs=Object.values(epicBugMap)
     .filter(function(x){return x.total>0;})
     .sort(function(a,b){return b.open-a.open;})
-    .slice(0,8);
+    .slice(0,10);
+
+  // Filter excluded member
+  var filteredMems=mems.filter(function(m){
+    var n=(m.identity&&m.identity.displayName)||'';
+    return n.toUpperCase().indexOf(EXCL_MEMBER)<0;
+  });
 
   return {
-    proj: proj,
-    wi: { total:allWorkItems.length, done:allDone, pct:pct, oe:oe, cw:burned, rw:rw, features:initData },
-    bi: { total:bugs.length, states:bugSt },
-    members:mems.length, capacity:cap, burned:burned, remaining:rw, util:util,
-    critical_bugs: critBugs,
-    _mems: mems, _items: items
+    proj:proj,
+    wi:{total:allWI.length,done:allDone,pct:pct,oe:oe,cw:burned,rw:rw,features:initData},
+    bi:{total:bugs.length,states:bugSt},
+    members:filteredMems.length,capacity:cap,burned:burned,remaining:rw,util:util,
+    critical_bugs:critBugs,
+    _mems:filteredMems,_items:items
   };
 }
 
 // ── TEAM DATA (Cycle Time from state change dates) ──
 function buildTeamData(data){
+  var EXCL='TRAN GIANG BAO HUNG';
   var map={};
   data.forEach(function(d){
     d._mems.forEach(function(m){
       var n=(m.identity&&m.identity.displayName)||'Unknown';
+      if(n.toUpperCase().indexOf(EXCL)>=0) return;
       if(!map[n])map[n]={name:n,proj:d.proj,completed:0,totalAssigned:0,cycleTimes:[],velocities:[]};
     });
     d._items.forEach(function(w){
@@ -708,27 +778,17 @@ function renderKPIs(data){
     kpiCard('ip','bp',ADO.epic,'Active Epics',countEpics(data),'','—','ne')+
     kpiCard('ir','br',ADO.bug,'Open Bugs',bugs,'',dBugs||'—','ne')+
     kpiCard('ib','bb',ADO.util,'Team Utilization',util,'%',dUtil||'—','ne')+
-    kpiCard('ib','bb',ADO.cycle,'Avg Cycle Time',avgCycleTime(),'days','—','ne')+
-    kpiCard('ip','bp',ADO.lead,'Avg Lead Time','—','days','—','ne');
+    kpiCard('ib','bb',ADO.cycle,'Avg Cycle Time',avgCycleTime(),'days','—','ne');
 }
 function countEpics(data){
-  // features = Initiatives (Epics in ADO), epics = Features in ADO
+  // Count non-done Epics (L2 = epics inside each initiative)
   var n=0;
   data.forEach(function(d){
     (d.wi.features||[]).forEach(function(init){
-      // count non-done Features (shown as Epics in UI)
       n+=(init.epics||[]).filter(function(e){return e.state!=='Done';}).length;
     });
   });
   return n;
-}
-function avgCycleTime(){if(!_MOCK||!_MOCK.team)return'—';var t=_MOCK.team.filter(function(m){return m.cycle&&m.cycle!=='-';});if(!t.length)return'—';return Math.round(t.reduce(function(a,m){return a+m.cycle;},0)/t.length*10)/10;}
-function delta(cur,prev,unit,inv){
-  if(prev===null||prev===undefined)return'—';
-  unit=unit||'';
-  var d=cur-prev;var sign=d>0?'▲':'▼';var cls=d===0?'ne':(inv?(d>0?'dn':'up'):(d>0?'up':'dn'));
-  if(d===0)return'<span class="ne">No change</span>';
-  return'<span class="'+cls+'">'+sign+' '+Math.abs(d)+unit+' vs last load</span>';
 }
 function kpiCard(icCls,barCls,icSvg,lbl,val,unit,delta,dc){
   return'<div class="kc"><div class="kc-top"><div class="kc-icon '+icCls+'">'+icSvg+'</div><div class="kc-lbl">'+lbl+'</div></div><div><span class="kc-val">'+val+'</span><span class="kc-unit">'+unit+'</span></div><div class="kc-delta ne">'+delta+'</div><div class="kc-bar '+barCls+'"></div></div>';
@@ -845,7 +905,7 @@ function buildProjHTML(d){
   out+='<div class="pd-banner"><div><div class="pd-title">'+d.proj+'</div><div class="pd-sub">Project Detail View</div></div><div class="live-badge"><svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#16A34A"/></svg>LIVE</div></div>';
   out+=kpiRow;
   out+='<div class="card" style="margin-bottom:10px"><div class="sec">&#9654; Initiative Status</div>'+initHTML+'</div>';
-  out+='<div class="pd-bottom3"><div class="card"><div class="sec">&#128027; Bug Overview</div>'+bugHTML+'</div><div class="card"><div class="sec">&#128680; Top Epics by Open Bugs</div><div style="overflow-y:auto;max-height:340px">'+critHTML+'</div></div><div class="card"><div class="sec">&#127942; Team Performance</div><div style="overflow-x:auto">'+buildTeamTbl(teamData,false)+'</div></div></div>';
+  out+='<div class="pd-bottom3"><div class="card"><div class="sec">&#128027; Bug Overview</div>'+bugHTML+'</div><div class="card"><div class="sec">&#128680; Top Epics by Open Bugs</div><div style="overflow-x:auto">'+critHTML+'</div></div><div class="card"><div class="sec">&#127942; Team Performance</div><div style="overflow-x:auto">'+buildTeamTbl(teamData,false)+'</div></div></div>';
   out+='<div class="card"><div class="wkh"><div class="sec" style="margin-bottom:0">&#128197; Weekly Activity</div><div id="wk-hdr-'+sfx+'" style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--txt3)">Calendar Week:</span></div></div><div class="wk-tbl" id="wktbl_'+sfx+'"></div></div>';
   return out;
 }
