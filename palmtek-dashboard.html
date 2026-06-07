@@ -398,7 +398,20 @@ async function boot(){
 // ── ADO HELPERS ──
 async function apPost(path,body){var r=await fetch('https://dev.azure.com/'+CFG.adoOrg+'/'+path,{method:'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify(body)});if(r.status===401){sessionStorage.removeItem('ado_tok');location.reload();}if(!r.ok)throw new Error(r.status);return r.json();}
 async function apGet(path){var r=await fetch('https://dev.azure.com/'+CFG.adoOrg+'/'+path,{headers:{Authorization:'Bearer '+tok}});if(!r.ok)return null;return r.json();}
-async function getItems(proj,ids,fields){if(!ids.length)return[];var results=[],i=0;while(i<ids.length){var chunk=ids.slice(i,i+200);var d=await apGet(proj+'/_apis/wit/workitems?ids='+chunk.join(',')+'&fields='+fields.join(',')+'&api-version=7.0');if(d&&d.value)results=results.concat(d.value);i+=200;}return results;}
+async function getItems(proj,ids,fields){
+  if(!ids.length) return [];
+  // Split into batches of 200
+  var batches=[];
+  for(var i=0;i<ids.length;i+=200)
+    batches.push(ids.slice(i,i+200));
+  // Fetch ALL batches in parallel
+  var results=await Promise.all(batches.map(function(chunk){
+    return apGet(proj+'/_apis/wit/workitems?ids='+chunk.join(',')+'&fields='+fields.join(',')+'&api-version=7.0')
+      .then(function(d){return(d&&d.value)?d.value:[];})
+      .catch(function(){return[];});
+  }));
+  return results.reduce(function(a,b){return a.concat(b);},[]);
+}
 function gf(w,f){return(w.fields&&w.fields[f])||0;}
 function gs(w,f){return(w.fields&&w.fields[f])||'';}
 function isDone(w){return['Done','Closed','Resolved','Completed'].indexOf(gs(w,'System.State'))>=0;}
@@ -444,8 +457,10 @@ async function loadAll(){
     if(pr.ok){var pd=await pr.json();CFG.projects=(pd.value||[]).map(function(p){return p.name;}).filter(function(n){var l=n.toLowerCase();return !CFG.EXCLUDE.some(function(ex){return l.indexOf(ex)>=0;});}).sort();}
     if(!CFG.projects.length) CFG.projects=MOCK_FB.projects;
 
-    showLov('Loading '+CFG.projects.length+' projects...');
-    var data=await Promise.all(CFG.projects.map(fetchProj));
+    showLov('Loading '+CFG.projects.length+' projects in parallel...');
+    var data=await Promise.all(CFG.projects.map(function(p){
+      return fetchProj(p);
+    }));
 
     // Build team data
     var team=buildTeamData(data);
@@ -490,11 +505,16 @@ async function fetchProj(proj){
       'Microsoft.VSTS.Common.Priority'
     ];
     var wiql="SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject]='"+proj+"' AND [System.WorkItemType] IN ('Initiative','Epic','Feature','User Story','Task','Bug') AND [System.State]<>'Removed' ORDER BY [System.Id]";
-    var wr=await apPost(proj+'/_apis/wit/wiql?api-version=7.0',{query:wiql});
-    var mR=await apGet('_apis/projects/'+proj+'/teams/'+encodeURIComponent(proj+' Team')+'/members?api-version=7.0');
+    // Run WIQL + members fetch IN PARALLEL
+    var parallel=await Promise.all([
+      apPost(proj+'/_apis/wit/wiql?api-version=7.0',{query:wiql}),
+      apGet('_apis/projects/'+proj+'/teams/'+encodeURIComponent(proj+' Team')+'/members?api-version=7.0')
+    ]);
+    var wr=parallel[0], mR=parallel[1];
     var ids=(wr&&wr.workItems?wr.workItems:[]).map(function(w){return w.id;});
-    var items=await getItems(proj,ids,FIELDS);
     var mems=mR&&mR.value?mR.value:[];
+    // Fetch items (parallel batches inside getItems)
+    var items=await getItems(proj,ids,FIELDS);
     return transformProj(proj,items,mems);
   }catch(e){
     console.warn('fetchProj error',proj,e);
