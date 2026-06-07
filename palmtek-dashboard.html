@@ -209,6 +209,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-s
 .footer-left{display:flex;align-items:center;gap:12px}
 .footer-dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;display:inline-block;box-shadow:0 0 4px #4ADE80}
 .footer-right{display:flex;align-items:center;gap:16px;color:rgba(255,255,255,.6)}
+
+/* SKELETON */
+@keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+.skel{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:1200px 100%;animation:shimmer 1.5s infinite;border-radius:6px;display:inline-block;width:100%}
+.skel-h{height:72px;border-radius:10px;margin-bottom:6px}
+.skel-r{height:16px;border-radius:4px;margin-bottom:8px}
+.skel-c{height:110px;width:175px;border-radius:10px;margin-right:8px}
 </style>
 </head>
 <body>
@@ -250,6 +257,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-s
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="13" rx="1.5" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/><path d="M1 6h14" stroke="rgba(255,255,255,.7)" stroke-width="1"/><path d="M5 1v3M11 1v3" stroke="rgba(255,255,255,.7)" stroke-width="1.2" stroke-linecap="round"/></svg>
         <span id="hdate">—</span>
       </div>
+      <span id="load-progress" style="display:none;font-size:11px;color:rgba(255,255,255,.85);background:rgba(255,255,255,.15);padding:3px 10px;border-radius:100px;font-weight:600"></span>
       <div class="hcal" id="hcal">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="13" rx="1.5" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/><path d="M1 6h14" stroke="rgba(255,255,255,.7)" stroke-width="1"/></svg>
         Calendar Week —
@@ -450,11 +458,11 @@ function delta(cur,prev,unit,inv){
 }
 // ── LOAD ALL ──// ── LOAD ALL ──
 // ── ITEM CACHE (sessionStorage, 5-min TTL per project) ──
-var ITEM_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+var ITEM_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 function itemCacheKey(proj){ return 'ado_items_'+proj; }
 function itemCacheGet(proj){
   try{
-    var raw=sessionStorage.getItem(itemCacheKey(proj));
+    var raw=localStorage.getItem(itemCacheKey(proj));
     if(!raw) return null;
     var c=JSON.parse(raw);
     if(!c||!c.ts||!c.items) return null;
@@ -463,63 +471,63 @@ function itemCacheGet(proj){
   }catch(e){ return null; }
 }
 function itemCacheSet(proj, items){
-  try{ sessionStorage.setItem(itemCacheKey(proj), JSON.stringify({ts:Date.now(),items:items})); }
+  try{ localStorage.setItem(itemCacheKey(proj), JSON.stringify({ts:Date.now(),items:items})); }
   catch(e){} // quota exceeded — just skip
 }
 function itemCacheClear(){
   try{
-    Object.keys(sessionStorage).filter(function(k){return k.indexOf('ado_items_')===0;})
-      .forEach(function(k){sessionStorage.removeItem(k);});
+    Object.keys(localStorage).filter(function(k){return k.indexOf('ado_items_')===0;})
+      .forEach(function(k){localStorage.removeItem(k);});
   }catch(e){}
 }
 
+function renderSkeleton(){
+  var k=document.getElementById('krow');
+  if(k){var h='';for(var i=0;i<7;i++)h+='<div class="kc"><div class="skel skel-h"></div></div>';k.innerHTML=h;}
+  var g=document.getElementById('health-grid');
+  if(g){var h='';for(var i=0;i<3;i++)h+='<div class="skel skel-c"></div>';g.innerHTML=h;}
+  var t=document.getElementById('itbl');
+  if(t){var h='<div style="padding:12px">';for(var i=0;i<5;i++)h+='<div class="skel skel-r" style="width:'+(i%2===0?'80':'60')+'%"></div>';h+='</div>';t.innerHTML=h;}
+}
 async function loadAll(){
-  showLov('Fetching from Azure DevOps...');hideErr();
+  showLov('Connecting to Azure DevOps...');hideErr();
   try{
-    // Discover projects
     var pr=await fetch('https://dev.azure.com/'+CFG.adoOrg+'/_apis/projects?api-version=7.0&$top=100',{headers:{Authorization:'Bearer '+tok}});
     if(pr.ok){var pd=await pr.json();CFG.projects=(pd.value||[]).map(function(p){return p.name;}).filter(function(n){var l=n.toLowerCase();return !CFG.EXCLUDE.some(function(ex){return l.indexOf(ex)>=0;});}).sort();}
     if(!CFG.projects.length) CFG.projects=MOCK_FB.projects;
-
-    // Show tabs immediately so user sees structure
-    buildTabs();
-    showLov('Loading '+CFG.projects.length+' projects...');
-
-    // Progressive: fetch all projects in parallel, render as soon as ALL done
-    // (rendering partial data causes inconsistent KPI strip totals)
-    var data=await Promise.all(CFG.projects.map(function(p,idx){
-      return fetchProj(p).then(function(d){
-        showLov('Loaded: '+d.proj+' ('+(idx+1)+'/'+CFG.projects.length+')');
+    // Show skeleton immediately — structure visible before data
+    buildTabs(); renderSkeleton(); hideLov();
+    var lpEl=document.getElementById('load-progress');
+    if(lpEl){lpEl.style.display='block';lpEl.textContent='0/'+CFG.projects.length;}
+    // Progressive: render each project as it arrives
+    var data=new Array(CFG.projects.length);
+    var loaded=0;
+    await Promise.all(CFG.projects.map(function(proj,idx){
+      return fetchProj(proj).then(function(d){
+        data[idx]=d; loaded++;
+        var partial=data.filter(Boolean);
+        _MOCK={projects:CFG.projects,data:partial,team:buildTeamData(partial),weekly:buildWeeklyFromData(partial)};
+        renderProjView(d);
+        renderAll(partial);
+        if(lpEl) lpEl.textContent=loaded+'/'+CFG.projects.length;
         return d;
       });
     }));
-
-    // Build team + weekly (weekly revisions run in background)
+    // Final complete render
     var team=buildTeamData(data);
     var weekly=buildWeeklyFromData(data);
-
     _MOCK={projects:CFG.projects,data:data,team:team,weekly:weekly};
-
-    // Weekly revisions in background — does NOT block dashboard render
-    if(aWk){
-      buildWeeklyRevisions(data,aWk).then(function(rw){
-        _MOCK.weekly=rw; renderWkAll();
-      }).catch(function(e){console.warn('Weekly err:',e);});
-    }
-
-    // Update header
+    buildProjViews(); buildWkOpts(); renderAll(data);
+    if(lpEl) lpEl.style.display='none';
+    if(aWk){buildWeeklyRevisions(data,aWk).then(function(rw){_MOCK.weekly=rw;renderWkAll();}).catch(function(e){console.warn('Weekly err:',e);});}
     var now=new Date();var wn=gwn(now);
     var nowStr=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+'  '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('hdate').textContent='Data as of: '+nowStr;
     var feEl=document.getElementById('footer-updated');if(feEl)feEl.textContent='Last updated: '+nowStr;
     document.getElementById('hcal').innerHTML='<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="13" rx="1.5" stroke="rgba(255,255,255,.7)" stroke-width="1.2"/><path d="M1 6h14" stroke="rgba(255,255,255,.7)" stroke-width="1"/></svg> Calendar Week W'+wn[1];
-
-    buildTabs();buildProjViews();buildWkOpts();renderAll(_MOCK.data);
   }catch(e){showErr('Failed to load ADO data: '+e.message);console.error(e);}
   hideLov();
 }
-
-// ── FETCH PROJECT ──
 async function fetchProj(proj){
   try{
     var FIELDS=[
@@ -1122,11 +1130,17 @@ function buildTeamTbl(arr, showProj){
 
 // ── PROJECT DETAIL ──
 function buildProjViews(){
-  var container=document.getElementById('proj-views');container.innerHTML='';
-  if(!_MOCK) return;
-  _MOCK.data.forEach(function(d){var div=document.createElement('div');div.className='proj-detail';div.id='pd-'+sf(d.proj);div.innerHTML=buildProjHTML(d);container.appendChild(div);});
+  var c=document.getElementById('proj-views');
+  if(!c||!_MOCK)return;
+  c.innerHTML='';
+  _MOCK.data.forEach(function(d){renderProjView(d);});
 }
-
+function renderProjView(d){
+  var c=document.getElementById('proj-views');if(!c)return;
+  var ex=document.getElementById('pd-'+sf(d.proj));
+  if(ex){ex.innerHTML=buildProjHTML(d);}
+  else{var div=document.createElement('div');div.className='proj-detail';div.id='pd-'+sf(d.proj);div.innerHTML=buildProjHTML(d);c.appendChild(div);}
+}
 function buildProjHTML(d){
   var sfx=sf(d.proj);var pct=d.wi.pct;var util=d.util;
   var kpiRow='<div class="pd-kpi-row">';
