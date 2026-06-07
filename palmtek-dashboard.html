@@ -408,42 +408,39 @@ function gf(w,f){return(w.fields&&w.fields[f])||0;}
 function gs(w,f){return(w.fields&&w.fields[f])||'';}
 function isDone(w){return['Done','Closed','Resolved','Completed'].indexOf(gs(w,'System.State'))>=0;}
 
-// ── CACHE (delta vs last week) ──
-var CACHE_KEY='palmtek_kpi_cache';
-function getCache(){try{var c=localStorage.getItem(CACHE_KEY);return c?JSON.parse(c):{};}catch(e){return{};}}
-function setCache(data){try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),data:data}));}catch(e){}}
-function getCached(){var c=getCache();if(!c.ts)return null;var age=(Date.now()-c.ts)/1000/3600;if(age>168)return null;// expire after 7 days
-return c.data;}
-function computeDeltas(cur){
-  var prev=getCached();
-  if(!prev) return {pct:null,rw:null,bugs:null,util:null};
-  return {
-    pct: Math.round(cur.pct - prev.pct),
-    rw: Math.round(cur.rw - prev.rw),
-    bugs: Math.round(cur.bugs - prev.bugs),
-    util: Math.round(cur.util - prev.util)
-  };
+// ── CACHE + DELTA SYSTEM ──
+var CACHE_KEY = 'palmtek_kpi_v2';
+function cacheSave(snap){try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),snap:snap}));}catch(e){}}
+function cacheLoad(){
+  try{
+    var c=localStorage.getItem(CACHE_KEY);
+    if(!c) return null;
+    var p=JSON.parse(c);
+    if(!p||!p.ts) return null;
+    if((Date.now()-p.ts)/3600000>168) return null; // 7-day expiry
+    return p.snap;
+  }catch(e){return null;}
+}
+function _computeAvgCycle(){
+  if(!_MOCK||!_MOCK.team) return null;
+  var t=_MOCK.team.filter(function(m){return m.cycle&&m.cycle!=='-'&&!isNaN(parseFloat(m.cycle));});
+  if(!t.length) return null;
+  return Math.round(t.reduce(function(a,m){return a+parseFloat(m.cycle);},0)/t.length*10)/10;
+}
+function avgCycleTime(){
+  var v=_computeAvgCycle(); return v!==null?v:'—';
 }
 function delta(cur,prev,unit,inv){
-  if(prev===null||prev===undefined) return '—';
+  if(prev===null||prev===undefined||prev===''||isNaN(parseFloat(prev))||isNaN(parseFloat(cur))) return '—';
   unit=unit||'';
-  var d=Math.round(cur-prev);
+  var d=Math.round((parseFloat(cur)-parseFloat(prev))*10)/10;
   if(d===0) return '<span style="color:var(--txt3)">No change</span>';
-  var up=inv?(d<0):(d>0);
+  var better=inv?(d<0):(d>0);
   var sign=d>0?'▲':'▼';
-  var cls=up?'up':'dn';
-  return '<span class="kc-delta '+cls+'">'+sign+' '+Math.abs(d)+unit+'</span>';
+  var color=better?'var(--green)':'var(--red)';
+  return '<span style="color:'+color+';font-weight:600;display:flex;align-items:center;gap:2px">'+sign+' '+Math.abs(d)+unit+'</span>';
 }
-function saveCacheSnapshot(data){
-  var tot=0,dn=0,rw=0,bugs=0,mems=0,burned=0;
-  data.forEach(function(d){tot+=d.wi.total;dn+=d.wi.done;rw+=d.wi.rw;burned+=d.wi.cw;bugs+=d.bi.total;mems+=d.members;});
-  var pct=tot>0?Math.round(dn/tot*100):0;
-  var util=mems>0?Math.min(100,Math.round(burned/(mems*60)*100)):0;
-  var existing=getCached();
-  if(!existing){setCache({pct:pct,rw:rw,bugs:bugs,util:util});}
-}
-
-// ── LOAD ALL ──
+// ── LOAD ALL ──// ── LOAD ALL ──
 async function loadAll(){
   showLov('Fetching from Azure DevOps...');hideErr();
   try{
@@ -771,23 +768,30 @@ function renderAll(data){
 
 function renderKPIs(data){
   var tot=0,dn=0,rw=0,bugs=0,mems=0,burned=0,feats=0;
-  data.forEach(function(d){tot+=d.wi.total;dn+=d.wi.done;rw+=d.wi.rw;burned+=d.wi.cw;bugs+=d.bi.total;mems+=d.members;feats+=(d.wi.features||[]).length;});
-  var pct=tot>0?Math.round(dn/tot*100):0;
-  var util=mems>0?Math.min(100,Math.round(burned/(mems*60)*100)):0;
-  // Delta from cache
-  var prev=getCached();
-  var dPct=prev?delta(pct,prev.pct):'';
-  var dRW=prev?delta(rw,prev.rw,'h','inv'):'';
-  var dBugs=prev?delta(bugs,prev.bugs,'','inv'):'';
-  var dUtil=prev?delta(util,prev.util,'%'):'';
-  document.getElementById('krow').innerHTML=
-    kpiCard('ig','bg',ADO.check,'Portfolio Completion',pct,'%',dPct||'—','ne')+
-    kpiCard('ir','br',ADO.effort,'Remaining Effort',rw,'h',dRW||'—','ne')+
-    kpiCard('iy','by',ADO.star,'Active Initiatives',feats,'','—','ne')+
-    kpiCard('ip','bp',ADO.epic,'Active Epics',countEpics(data),'','—','ne')+
-    kpiCard('ir','br',ADO.bug,'Open Bugs',bugs,'',dBugs||'—','ne')+
-    kpiCard('ib','bb',ADO.util,'Team Utilization',util,'%',dUtil||'—','ne')+
-    kpiCard('ib','bb',ADO.cycle,'Avg Cycle Time',avgCycleTime(),'days','—','ne');
+  data.forEach(function(d){
+    tot+=d.wi.total; dn+=d.wi.done; rw+=d.wi.rw;
+    burned+=d.wi.cw; bugs+=d.bi.total; mems+=d.members;
+    feats+=(d.wi.features||[]).length;
+  });
+  var pct  = tot>0?Math.round(dn/tot*100):0;
+  var util = mems>0?Math.min(100,Math.round(burned/(mems*60)*100)):0;
+  var cycle = avgCycleTime();
+  // Load previous snapshot for deltas, then save current
+  var prev = cacheLoad();
+  cacheSave({pct:pct,rw:rw,bugs:bugs,util:util,cycle:typeof cycle==='number'?cycle:null,ts:Date.now()});
+  var dPct   = prev?delta(pct,  prev.pct,  '%', false):'—';
+  var dRW    = prev?delta(rw,   prev.rw,   'h', true) :'—';
+  var dBugs  = prev?delta(bugs, prev.bugs, '', true)  :'—';
+  var dUtil  = prev?delta(util, prev.util, '%', false):'—';
+  var dCycle = (prev&&typeof cycle==='number')?delta(cycle,prev.cycle,'d',true):'—';
+  document.getElementById('krow').innerHTML =
+    kpiCard('ig','bg',ADO.check, 'Portfolio Completion',pct,  '%',    dPct)   +
+    kpiCard('ir','br',ADO.effort,'Remaining Effort',    rw,   'h',    dRW)    +
+    kpiCard('iy','by',ADO.star,  'Active Initiatives',  feats,'',     '—')    +
+    kpiCard('ip','bp',ADO.epic,  'Active Epics',countEpics(data),'',  '—')    +
+    kpiCard('ir','br',ADO.bug,   'Open Bugs',           bugs, '',     dBugs)  +
+    kpiCard('ib','bb',ADO.util,  'Team Utilization',    util, '%',    dUtil)  +
+    kpiCard('ib','bb',ADO.cycle, 'Avg Cycle Time',      cycle,'days', dCycle);
 }
 function countEpics(data){
   // Count non-done Epics (L2 = epics inside each initiative)
