@@ -390,7 +390,7 @@ async function boot(){
     var me=await fetch('https://app.vssps.visualstudio.com/_apis/profile/profiles/me?api-version=7.0',{headers:{Authorization:'Bearer '+tok}});
     if(me.ok){var u=await me.json();var n=u.displayName||u.emailAddress||'User';document.getElementById('uav').textContent=n.charAt(0).toUpperCase();document.getElementById('unm').textContent=n.split(' ')[0];}
   }catch(e){}
-  document.getElementById('bref').onclick=loadAll;
+  document.getElementById('bref').onclick=function(){itemCacheClear();loadAll();};
   document.getElementById('bout').onclick=function(){sessionStorage.removeItem('ado_tok');location.reload();};
   await loadAll();
 }
@@ -449,6 +449,30 @@ function delta(cur,prev,unit,inv){
   return '<span style="color:'+color+';font-weight:600;display:flex;align-items:center;gap:2px">'+sign+' '+Math.abs(d)+unit+'</span>';
 }
 // ── LOAD ALL ──// ── LOAD ALL ──
+// ── ITEM CACHE (sessionStorage, 5-min TTL per project) ──
+var ITEM_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+function itemCacheKey(proj){ return 'ado_items_'+proj; }
+function itemCacheGet(proj){
+  try{
+    var raw=sessionStorage.getItem(itemCacheKey(proj));
+    if(!raw) return null;
+    var c=JSON.parse(raw);
+    if(!c||!c.ts||!c.items) return null;
+    if(Date.now()-c.ts > ITEM_CACHE_TTL) return null;
+    return c.items;
+  }catch(e){ return null; }
+}
+function itemCacheSet(proj, items){
+  try{ sessionStorage.setItem(itemCacheKey(proj), JSON.stringify({ts:Date.now(),items:items})); }
+  catch(e){} // quota exceeded — just skip
+}
+function itemCacheClear(){
+  try{
+    Object.keys(sessionStorage).filter(function(k){return k.indexOf('ado_items_')===0;})
+      .forEach(function(k){sessionStorage.removeItem(k);});
+  }catch(e){}
+}
+
 async function loadAll(){
   showLov('Fetching from Azure DevOps...');hideErr();
   try{
@@ -457,25 +481,31 @@ async function loadAll(){
     if(pr.ok){var pd=await pr.json();CFG.projects=(pd.value||[]).map(function(p){return p.name;}).filter(function(n){var l=n.toLowerCase();return !CFG.EXCLUDE.some(function(ex){return l.indexOf(ex)>=0;});}).sort();}
     if(!CFG.projects.length) CFG.projects=MOCK_FB.projects;
 
-    showLov('Loading '+CFG.projects.length+' projects in parallel...');
-    var data=await Promise.all(CFG.projects.map(function(p){
-      return fetchProj(p);
+    // Show tabs immediately so user sees structure
+    buildTabs();
+    showLov('Loading '+CFG.projects.length+' projects...');
+
+    // Progressive: fetch all projects in parallel, render as soon as ALL done
+    // (rendering partial data causes inconsistent KPI strip totals)
+    var data=await Promise.all(CFG.projects.map(function(p,idx){
+      return fetchProj(p).then(function(d){
+        showLov('Loaded: '+d.proj+' ('+(idx+1)+'/'+CFG.projects.length+')');
+        return d;
+      });
     }));
 
-    // Build team data
+    // Build team + weekly (weekly revisions run in background)
     var team=buildTeamData(data);
-
-    // Build weekly data via Revision API (exact CW per day)
-    var weekly=buildWeeklyFromData(data); // initial placeholder
-    // Async load revision-based weekly (updates _MOCK.weekly after render)
-    if(aWk){
-      buildWeeklyRevisions(data, aWk).then(function(revWeekly){
-        _MOCK.weekly=revWeekly;
-        renderWkAll();
-      }).catch(function(e){console.warn('Weekly revisions error:',e);});
-    }
+    var weekly=buildWeeklyFromData(data);
 
     _MOCK={projects:CFG.projects,data:data,team:team,weekly:weekly};
+
+    // Weekly revisions in background — does NOT block dashboard render
+    if(aWk){
+      buildWeeklyRevisions(data,aWk).then(function(rw){
+        _MOCK.weekly=rw; renderWkAll();
+      }).catch(function(e){console.warn('Weekly err:',e);});
+    }
 
     // Update header
     var now=new Date();var wn=gwn(now);
@@ -494,8 +524,7 @@ async function fetchProj(proj){
   try{
     var FIELDS=[
       'System.Id','System.Title','System.State','System.WorkItemType',
-      'System.AssignedTo','System.ChangedDate','System.CreatedDate',
-      'System.IterationPath','System.Parent',
+      'System.AssignedTo','System.ChangedDate','System.Parent',
       'Microsoft.VSTS.Scheduling.RemainingWork',
       'Microsoft.VSTS.Scheduling.OriginalEstimate',
       'Microsoft.VSTS.Scheduling.CompletedWork',
@@ -513,8 +542,10 @@ async function fetchProj(proj){
     var wr=parallel[0], mR=parallel[1];
     var ids=(wr&&wr.workItems?wr.workItems:[]).map(function(w){return w.id;});
     var mems=mR&&mR.value?mR.value:[];
-    // Fetch items (parallel batches inside getItems)
-    var items=await getItems(proj,ids,FIELDS);
+    // Check session cache first (5-min TTL)
+    var cached=itemCacheGet(proj);
+    var items=cached||await getItems(proj,ids,FIELDS);
+    if(!cached) itemCacheSet(proj,items);
     return transformProj(proj,items,mems);
   }catch(e){
     console.warn('fetchProj error',proj,e);
