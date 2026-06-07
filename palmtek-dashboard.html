@@ -205,10 +205,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-s
 .empty{text-align:center;padding:24px;color:var(--txt3);font-size:13px}
 
 /* FOOTER */
-.footer{background:#fff;border-top:1px solid var(--bdr);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-size:11px;color:var(--txt3)}
+.footer{background:linear-gradient(90deg,#5C0F0F 0%,#7A2322 40%,#AF3331 80%,#8B1A1A 100%);padding:9px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-size:11px;color:rgba(255,255,255,.85);box-shadow:0 -2px 8px rgba(0,0,0,.25)}
 .footer-left{display:flex;align-items:center;gap:12px}
-.footer-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block}
-.footer-right{display:flex;align-items:center;gap:16px}
+.footer-dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;display:inline-block;box-shadow:0 0 4px #4ADE80}
+.footer-right{display:flex;align-items:center;gap:16px;color:rgba(255,255,255,.6)}
 </style>
 </head>
 <body>
@@ -315,12 +315,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);font-s
     </div>
     <div class="footer-right">
       <span>Organization: <b>PalmtekSolution</b></span>
-      <span style="color:var(--bdr2)">|</span>
-      <span>PalmTek Solution JSC &copy; 2026</span>
-    </div>
-  </div>
-</div>
-
+     
 <script>
 // ── MOCK FALLBACK (used if ADO fetch fails for a project) ──
 var MOCK_FB = {"projects": ["Depository", "e-PrMS", "e-PMMS"], "data": [{"proj": "Depository", "wi": {"total": 450, "done": 324, "pct": 72, "oe": 575, "cw": 322, "rw": 118, "features": [{"title": "[HANDHELD] He thong van hanh thiet bi cam tay", "state": "Active", "todo": 2, "dev": 6, "test": 0, "done": 4, "total": 12, "oe": 17, "cw": 0, "rw": 16, "epics": [{"title": "Van hanh nghiep vu HANDHELD", "todo": 1, "dev": 2, "test": 0, "done": 1, "total": 4, "oe": 8, "cw": 0, "rw": 8, "pct": 25, "items": [{"title": "Setup thiet bi cam tay", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Kiem tra ket noi", "state": "Active", "rw": 3, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 5, "cw": 2, "rw_a": 3, "pct": 50}, {"title": "Van hanh ca ngay", "state": "To Do", "rw": 5, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 5, "cw": 0, "rw_a": 5, "pct": 0}], "state": "Active"}, {"title": "Bao cao he thong HANDHELD", "todo": 1, "dev": 2, "test": 0, "done": 2, "total": 5, "oe": 6, "cw": 0, "rw": 6, "pct": 40, "items": [{"title": "Bao cao cuoi ngay", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Bao cao tuan", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Bao cao thang", "state": "Active", "rw": 3, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 5, "cw": 2, "rw_a": 3, "pct": 50}, {"title": "Export PDF", "state": "To Do", "rw": 3, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 3, "cw": 0, "rw_a": 3, "pct": 0}], "state": "Active"}, {"title": "Cai dat thiet bi", "todo": 0, "dev": 2, "test": 0, "done": 1, "total": 3, "oe": 3, "cw": 0, "rw": 2, "pct": 33, "items": [{"title": "Cau hinh wifi", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Cai driver", "state": "Active", "rw": 2, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 4, "cw": 2, "rw_a": 2, "pct": 50}], "state": "Active"}]}, {"title": "[POS] Van hanh ban hang tai diem giao dich", "state": "Done", "todo": 8, "dev": 10, "test": 1, "done": 53, "total": 72, "oe": 134, "cw": 100, "rw": 17, "epics": [{"title": "Kiem soat cau hinh & tinh nang (POS)", "todo": 2, "dev": 3, "test": 0, "done": 18, "total": 23, "oe": 40, "cw": 35, "rw": 5, "pct": 78, "items": [{"title": "Cau hinh san pham", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Thiet lap gia", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Quan ly danh muc", "state": "Active", "rw": 5, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 7, "cw": 2, "rw_a": 5, "pct": 50}], "state": "Active"}, {"title": "Van hanh ban hang (POS)", "todo": 3, "dev": 4, "test": 1, "done": 20, "total": 28, "oe": 50, "cw": 38, "rw": 8, "pct": 71, "items": [{"title": "Tao hoa don", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Thanh toan", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Hoan tra hang", "state": "Active", "rw": 8, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 10, "cw": 2, "rw_a": 8, "pct": 50}], "state": "Active"}, {"title": "Bao cao he thong (POS)", "todo": 1, "dev": 1, "test": 0, "done": 5, "total": 7, "oe": 16, "cw": 9, "rw": 1, "pct": 71, "items": [{"title": "Bao cao doanh thu", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Bao cao ton kho", "state": "Active", "rw": 1, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 3, "cw": 2, "rw_a": 1, "pct": 50}], "state": "Active"}]}, {"title": "[CMS] He thong quan ly trung tam (Central Mana)", "state": "Done", "todo": 20, "dev": 30, "test": 10, "done": 194, "total": 254, "oe": 236, "cw": 127, "rw": 41, "epics": [{"title": "He thong quan ly trung tam (CMS)", "todo": 8, "dev": 10, "test": 4, "done": 80, "total": 102, "oe": 95, "cw": 52, "rw": 17, "pct": 78, "items": [{"title": "Quan ly chi nhanh", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Phan quyen truy cap", "state": "Active", "rw": 10, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 12, "cw": 2, "rw_a": 10, "pct": 50}], "state": "Active"}, {"title": "Giao dich ngan hang CMS", "todo": 6, "dev": 9, "test": 3, "done": 60, "total": 78, "oe": 72, "cw": 38, "rw": 12, "pct": 77, "items": [{"title": "Ket noi ngan hang", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Doi soat giao dich", "state": "Active", "rw": 12, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 14, "cw": 2, "rw_a": 12, "pct": 50}], "state": "Active"}, {"title": "Bao cao & thong ke CMS", "todo": 6, "dev": 11, "test": 3, "done": 54, "total": 74, "oe": 69, "cw": 37, "rw": 12, "pct": 73, "items": [{"title": "Dashboard tong hop", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Bao cao tai chinh", "state": "Active", "rw": 12, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 14, "cw": 2, "rw_a": 12, "pct": 50}], "state": "Active"}]}, {"title": "[KIOSK] He thong Kiosk", "state": "Done", "todo": 1, "dev": 7, "test": 0, "done": 36, "total": 44, "oe": 32, "cw": 15, "rw": 16, "epics": [{"title": "Van hanh Kiosk", "todo": 0, "dev": 3, "test": 0, "done": 16, "total": 19, "oe": 14, "cw": 7, "rw": 7, "pct": 84, "items": [{"title": "Man hinh chinh", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Thanh toan Kiosk", "state": "Active", "rw": 7, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 9, "cw": 2, "rw_a": 7, "pct": 50}], "state": "Active"}, {"title": "Bao cao Kiosk", "todo": 1, "dev": 4, "test": 0, "done": 20, "total": 25, "oe": 18, "cw": 8, "rw": 9, "pct": 80, "items": [{"title": "Bao cao giao dich", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Thong ke su dung", "state": "Active", "rw": 9, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 11, "cw": 2, "rw_a": 9, "pct": 50}], "state": "Active"}]}]}, "bi": {"total": 83, "states": {"New": 15, "Open": 28, "In Progress": 12, "Ready For Testing": 10, "Resolved": 10, "Closed": 6, "Rejected": 2}}, "members": 17, "capacity": 388, "burned": 319, "remaining": 69, "util": 82, "critical_bugs": [{"epic": "He thong quan ly trung tam (CMS)", "open": 16, "critical": 3, "total": 22}, {"epic": "Van hanh ban hang tai diem giao dich (POS)", "open": 14, "critical": 2, "total": 18}, {"epic": "He thong van hanh thiet bi cam tay (HANDHELD)", "open": 9, "critical": 1, "total": 12}, {"epic": "Kiem soat cau hinh & tinh nang (POS)", "open": 6, "critical": 1, "total": 9}, {"epic": "Cai dat he thong (POS)", "open": 5, "critical": 0, "total": 7}, {"epic": "Van hanh nghiep vu (HANDHELD)", "open": 4, "critical": 1, "total": 6}, {"epic": "Bao cao he thong (POS)", "open": 3, "critical": 0, "total": 4}, {"epic": "Giao dich ngan hang & Doi soat (CMS)", "open": 2, "critical": 0, "total": 3}]}, {"proj": "e-PrMS", "wi": {"total": 378, "done": 90, "pct": 24, "oe": 340, "cw": 205, "rw": 61, "features": [{"title": "Quan ly nguoi dung (e-PrMS)", "state": "Active", "todo": 2, "dev": 4, "test": 1, "done": 1, "total": 8, "oe": 14, "cw": 2, "rw": 12, "epics": [{"title": "Phan quyen & xac thuc", "todo": 1, "dev": 2, "test": 0, "done": 0, "total": 3, "oe": 6, "cw": 1, "rw": 5, "pct": 0, "items": [{"title": "Dang nhap SSO", "state": "Active", "rw": 3, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 5, "cw": 2, "rw_a": 3, "pct": 50}, {"title": "Phan quyen vai tro", "state": "To Do", "rw": 2, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 2, "cw": 0, "rw_a": 2, "pct": 0}], "state": "New"}, {"title": "Quan ly profile nguoi dung", "todo": 1, "dev": 2, "test": 1, "done": 1, "total": 5, "oe": 8, "cw": 1, "rw": 7, "pct": 20, "items": [{"title": "Cap nhat thong tin", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Avatar upload", "state": "Active", "rw": 4, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 6, "cw": 2, "rw_a": 4, "pct": 50}, {"title": "Lich su hoat dong", "state": "To Do", "rw": 3, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 3, "cw": 0, "rw_a": 3, "pct": 0}], "state": "Active"}]}, {"title": "Bao cao & thong ke", "state": "Active", "todo": 3, "dev": 2, "test": 0, "done": 2, "total": 7, "oe": 18, "cw": 8, "rw": 10, "epics": [{"title": "Bao cao tong hop", "todo": 2, "dev": 1, "test": 0, "done": 1, "total": 4, "oe": 10, "cw": 4, "rw": 6, "pct": 25, "items": [{"title": "Bao cao hieu suat", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Bao cao hang thang", "state": "To Do", "rw": 6, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 6, "cw": 0, "rw_a": 6, "pct": 0}], "state": "Active"}, {"title": "Dashboard thong ke", "todo": 1, "dev": 1, "test": 0, "done": 1, "total": 3, "oe": 8, "cw": 4, "rw": 4, "pct": 33, "items": [{"title": "Widget tong quan", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Bieu do xu huong", "state": "Active", "rw": 4, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 6, "cw": 2, "rw_a": 4, "pct": 50}], "state": "Active"}]}, {"title": "Quan ly du an", "state": "New", "todo": 1, "dev": 3, "test": 0, "done": 0, "total": 4, "oe": 12, "cw": 0, "rw": 12, "epics": [{"title": "Tao va quan ly du an", "todo": 1, "dev": 2, "test": 0, "done": 0, "total": 3, "oe": 8, "cw": 0, "rw": 8, "pct": 0, "items": [{"title": "Tao du an moi", "state": "To Do", "rw": 5, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 5, "cw": 0, "rw_a": 5, "pct": 0}, {"title": "Phan cong nhan su", "state": "To Do", "rw": 3, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 3, "cw": 0, "rw_a": 3, "pct": 0}], "state": "New"}, {"title": "Theo doi tien do du an", "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 4, "cw": 0, "rw": 4, "pct": 0, "items": [{"title": "Gantt chart", "state": "Active", "rw": 4, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 6, "cw": 2, "rw_a": 4, "pct": 50}], "state": "New"}]}]}, "bi": {"total": 28, "states": {"New": 4, "Open": 8, "In Progress": 4, "Ready For Testing": 3, "Resolved": 3, "Closed": 4, "Rejected": 2}}, "members": 11, "capacity": 266, "burned": 162, "remaining": 104, "util": 61, "critical_bugs": [{"epic": "Quan ly nguoi dung (e-PrMS)", "open": 2, "critical": 0, "total": 2}, {"epic": "Quan ly cau hinh (e-PrMS)", "open": 1, "critical": 0, "total": 1}]}, {"proj": "e-PMMS", "wi": {"total": 47, "done": 18, "pct": 38, "oe": 283, "cw": 118, "rw": 50, "features": [{"title": "e-PMMS Feature Group A", "state": "Active", "todo": 6, "dev": 5, "test": 3, "done": 5, "total": 19, "oe": 14, "cw": 3, "rw": 11, "epics": [{"title": "Module quan ly tai san", "todo": 3, "dev": 2, "test": 1, "done": 2, "total": 8, "oe": 6, "cw": 1, "rw": 5, "pct": 25, "items": [{"title": "Dang ky tai san", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Cap nhat trang thai", "state": "Active", "rw": 3, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 5, "cw": 2, "rw_a": 3, "pct": 50}, {"title": "Lich su bao tri", "state": "To Do", "rw": 2, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 2, "cw": 0, "rw_a": 2, "pct": 0}], "state": "Active"}, {"title": "Module bao tri", "todo": 2, "dev": 2, "test": 1, "done": 2, "total": 7, "oe": 5, "cw": 1, "rw": 4, "pct": 29, "items": [{"title": "Lap lich bao tri", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Canh bao su co", "state": "Active", "rw": 4, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 6, "cw": 2, "rw_a": 4, "pct": 50}], "state": "Active"}, {"title": "Module lich su", "todo": 1, "dev": 1, "test": 1, "done": 1, "total": 4, "oe": 3, "cw": 1, "rw": 2, "pct": 25, "items": [{"title": "Xem lich su", "state": "Done", "rw": 0, "todo": 0, "dev": 0, "test": 0, "done": 1, "total": 1, "oe": 2, "cw": 2, "rw_a": 0, "pct": 100}, {"title": "Export lich su", "state": "Active", "rw": 2, "todo": 0, "dev": 1, "test": 0, "done": 0, "total": 1, "oe": 4, "cw": 2, "rw_a": 2, "pct": 50}], "state": "Active"}]}, {"title": "e-PMMS Feature Group B", "state": "New", "todo": 3, "dev": 0, "test": 0, "done": 0, "total": 3, "oe": 8, "cw": 0, "rw": 8, "epics": [{"title": "Module tich hop API", "todo": 2, "dev": 0, "test": 0, "done": 0, "total": 2, "oe": 5, "cw": 0, "rw": 5, "pct": 0, "items": [{"title": "Ket noi ERP", "state": "To Do", "rw": 3, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 3, "cw": 0, "rw_a": 3, "pct": 0}, {"title": "Dong bo du lieu", "state": "To Do", "rw": 2, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 2, "cw": 0, "rw_a": 2, "pct": 0}], "state": "New"}, {"title": "Module thong bao", "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 3, "cw": 0, "rw": 3, "pct": 0, "items": [{"title": "Push notification", "state": "To Do", "rw": 3, "todo": 1, "dev": 0, "test": 0, "done": 0, "total": 1, "oe": 3, "cw": 0, "rw_a": 3, "pct": 0}], "state": "New"}]}]}, "bi": {"total": 10, "states": {"New": 3, "Open": 5, "In Progress": 2}}, "members": 7, "capacity": 144, "burned": 65, "remaining": 79, "util": 45, "critical_bugs": [{"epic": "He thong theo doi (e-PMMS)", "open": 0, "critical": 0, "total": 1}]}], "team": [{"name": "Hoc Nguyen Thai", "proj": "Depository", "completed": 18, "total": 18, "cycle": 3.2, "lead": 6.1, "velocity": 6.0, "perf": "Fast"}, {"name": "Linh La Ngoc", "proj": "Depository", "completed": 12, "total": 34, "cycle": 5.1, "lead": 8.3, "velocity": 4.0, "perf": "Normal"}, {"name": "Dinh Le Cong", "proj": "Depository", "completed": 14, "total": 26, "cycle": 5.4, "lead": 8.7, "velocity": 4.5, "perf": "Normal"}, {"name": "Quang Nguyen Ky", "proj": "Depository", "completed": 17, "total": 28, "cycle": 6.2, "lead": 9.5, "velocity": 5.5, "perf": "Normal"}, {"name": "Tuan Le", "proj": "e-PrMS", "completed": 10, "total": 24, "cycle": 6.8, "lead": 10.2, "velocity": 3.5, "perf": "Normal"}, {"name": "Anh Dao Thi Thu", "proj": "e-PrMS", "completed": 11, "total": 22, "cycle": 7.1, "lead": 10.8, "velocity": 3.5, "perf": "Slow"}, {"name": "Loc Vu Dam", "proj": "e-PMMS", "completed": 9, "total": 22, "cycle": 7.6, "lead": 11.2, "velocity": 3.0, "perf": "Slow"}, {"name": "Truong Vo Hong", "proj": "e-PMMS", "completed": 8, "total": 20, "cycle": 8.3, "lead": 12.5, "velocity": 2.5, "perf": "Slow"}], "weekly": {"members": ["Hoc Nguyen Thai", "Linh La Ngoc", "Dinh Le Cong", "Quang Nguyen Ky", "Tuan Le", "Anh Dao Thi Thu", "Loc Vu Dam", "Truong Vo Hong"], "projs": ["Depository", "Depository", "Depository", "Depository", "e-PrMS", "e-PrMS", "e-PMMS", "e-PMMS"], "days": [[6, 5, 7, 8, 0, 0, 0], [6, 7, 0, 9, 0, 0, 0], [0, 4, 6, 3, 0, 0, 0], [0, 0, 0, 4, 0, 0, 0], [5, 6, 4, 0, 0, 0, 0], [0, 3, 5, 4, 0, 0, 0], [4, 0, 5, 3, 0, 0, 0], [3, 4, 0, 5, 0, 0, 0]]}};
@@ -510,16 +505,32 @@ async function fetchProj(proj){
 function transformProj(proj,items,mems){
   var EXCL_MEMBERS=['TRAN GIANG BAO HUNG','HUNG TRAN GIANG BAO','GIANG BAO HUNG'];
 
-  var initiatives=items.filter(function(w){return gs(w,'System.WorkItemType')==='Initiative';});
-  var epics      =items.filter(function(w){return gs(w,'System.WorkItemType')==='Epic';});
-  var features   =items.filter(function(w){return gs(w,'System.WorkItemType')==='Feature';});
-  var stories    =items.filter(function(w){return['User Story','Task'].indexOf(gs(w,'System.WorkItemType'))>=0;});
-  var bugs       =items.filter(function(w){return gs(w,'System.WorkItemType')==='Bug';});
+  // Classify by type
+  var byType={};
+  items.forEach(function(w){
+    var t=gs(w,'System.WorkItemType');
+    if(!byType[t])byType[t]=[];
+    byType[t].push(w);
+  });
+  var initiatives = byType['Initiative']||[];
+  var epics       = byType['Epic']||[];
+  var features    = byType['Feature']||[];
+  var stories     = (byType['User Story']||[]).concat(byType['Task']||[]);
+  var bugs        = byType['Bug']||[];
 
-  var useEpicAsInit=initiatives.length===0;
-  if(useEpicAsInit){
-    initiatives=epics; epics=features; features=stories; stories=[];
+  // Determine hierarchy levels — NEVER reshuffle stories array
+  // L1=Initiative, L2=Epic, L3=Feature, L4=Story/Task
+  // If no Initiative type: L1=Epic, L2=Feature, L3=Story/Task (stories stays intact)
+  var L1, L2, L3;
+  if(initiatives.length > 0){
+    L1=initiatives; L2=epics; L3=features;
+  } else if(epics.length > 0){
+    L1=epics; L2=features; L3=stories;
+  } else {
+    L1=features; L2=stories; L3=[];
   }
+  // stories always = User Story + Task regardless of hierarchy
+  // used for leaf-level OE/CW/RW and completion%
 
   var itemById={};
   items.forEach(function(w){itemById[w.id]=w;});
@@ -535,110 +546,185 @@ function transformProj(proj,items,mems){
   }
   function sumF(arr,field){return arr.reduce(function(a,w){return a+gf(w,field);},0);}
   function pctOf(done,total){return total>0?Math.round(done/total*100):0;}
-
-  // Build hierarchy Initiative→Epic→Feature→Story
-  var initData=initiatives.map(function(init){
-    var initId=init.id;
-    var childEpics=epics.filter(function(e){return gf(e,'System.Parent')===initId;});
-    childEpics.sort(function(a,b){
-      function r(w){var s=gs(w,'System.State');return s==='Active'||s==='In Progress'?0:s==='Done'||s==='Closed'?2:1;}
+  function sortActive(arr){
+    return arr.slice().sort(function(a,b){
+      function r(w){var s=gs(w,'System.State');
+        return s==='Active'||s==='In Progress'?0:s==='Done'||s==='Closed'?2:1;}
       return r(a)-r(b);
     });
-    var epicData=childEpics.map(function(ep){
+  }
+
+  // ── Build L3 items under a given L2 node ──
+  function buildL3Items(l2id){
+    return L3.filter(function(s){return gf(s,'System.Parent')===l2id;});
+  }
+
+  // ── Build L2 nodes (Epics or Features) under a L1 node ──
+  function buildL2Data(l1id){
+    var childL2 = sortActive(L2.filter(function(e){return gf(e,'System.Parent')===l1id;}));
+    return childL2.map(function(ep){
       var epId=ep.id;
-      var childFeats=features.filter(function(f){return gf(f,'System.Parent')===epId;});
-      childFeats.sort(function(a,b){
-        function r(w){var s=gs(w,'System.State');return s==='Active'||s==='In Progress'?0:s==='Done'||s==='Closed'?2:1;}
-        return r(a)-r(b);
-      });
-      var featData=childFeats.map(function(f){
-        var fId=f.id;
-        var fSt=stories.filter(function(s){return gf(s,'System.Parent')===fId;});
-        var fDone=fSt.filter(isDone).length;
-        var fTotal=Math.max(fSt.length,1);
-        var fPct=pctOf(fDone,fTotal);
-        var fState=fPct>=100?'Done':(gs(f,'System.State')==='Active'||gs(f,'System.State')==='In Progress')?'Active':gs(f,'System.State');
+      var l3items = buildL3Items(epId);
+      // If L3 has children (Features under Epic), go one more level
+      // Otherwise l3items = User Stories directly under this node
+      var leafItems;
+      if(initiatives.length>0 && epics.length>0 && features.length>0){
+        // Full 4-level: L3=Feature, leafItems=stories under features
+        var childFeats=sortActive(features.filter(function(f){return gf(f,'System.Parent')===epId;}));
+        leafItems = childFeats.reduce(function(a,f){
+          return a.concat(stories.filter(function(s){return gf(s,'System.Parent')===f.id;}));
+        },[]);
+        var featData=childFeats.map(function(f){
+          var fId=f.id;
+          var fSt=stories.filter(function(s){return gf(s,'System.Parent')===fId;});
+          var fDone=fSt.filter(isDone).length;
+          var fTotal=Math.max(fSt.length,1);
+          var fPct=pctOf(fDone,fTotal);
+          var fState=fPct>=100?'Done':(gs(f,'System.State')==='Active'||gs(f,'System.State')==='In Progress')?'Active':gs(f,'System.State');
+          return{
+            title:gs(f,'System.Title'),state:fState,pct:fPct,
+            todo:fSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
+            dev:fSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
+            test:fSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
+            done:fDone,total:fTotal,
+            oe:Math.round(sumF(fSt,'Microsoft.VSTS.Scheduling.OriginalEstimate')+gf(f,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+            cw:Math.round(sumF(fSt,'Microsoft.VSTS.Scheduling.CompletedWork')+gf(f,'Microsoft.VSTS.Scheduling.CompletedWork')),
+            rw:Math.round(sumF(fSt,'Microsoft.VSTS.Scheduling.RemainingWork')+gf(f,'Microsoft.VSTS.Scheduling.RemainingWork')),
+            items:fSt.slice(0,10).map(function(s){
+              var sp=isDone(s)?100:(gs(s,'System.State')==='Active'||gs(s,'System.State')==='In Progress')?50:0;
+              var sst=gs(s,'System.State');
+              return{title:gs(s,'System.Title'),state:sst,pct:sp,
+                todo:(sst==='New'||sst==='To Do')?1:0,
+                dev:(sst==='Active'||sst==='In Progress')?1:0,
+                test:sst==='Testing'?1:0,done:isDone(s)?1:0,total:1,
+                oe:Math.round(gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+                cw:Math.round(gf(s,'Microsoft.VSTS.Scheduling.CompletedWork')),
+                rw:Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork')),
+                rw_a:Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork'))};
+            })
+          };
+        });
+        var epDone=leafItems.filter(isDone).length;
+        var epTotal=Math.max(leafItems.length,1);
+        var epPct=pctOf(epDone,epTotal);
+        var epState=epPct>=100?'Done':(gs(ep,'System.State')==='Active'||gs(ep,'System.State')==='In Progress')?'Active':gs(ep,'System.State');
         return{
-          title:gs(f,'System.Title'),state:fState,pct:fPct,
-          todo:fSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
-          dev:fSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
-          test:fSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
-          done:fDone,total:fTotal,
-          oe:Math.round(sumF(fSt,'Microsoft.VSTS.Scheduling.OriginalEstimate')+gf(f,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
-          cw:Math.round(sumF(fSt,'Microsoft.VSTS.Scheduling.CompletedWork')+gf(f,'Microsoft.VSTS.Scheduling.CompletedWork')),
-          rw:Math.round(sumF(fSt,'Microsoft.VSTS.Scheduling.RemainingWork')+gf(f,'Microsoft.VSTS.Scheduling.RemainingWork')),
-          items:fSt.slice(0,10).map(function(s){
-            var sp=isDone(s)?100:gs(s,'System.State')==='Active'||gs(s,'System.State')==='In Progress'?50:0;
+          title:gs(ep,'System.Title'),state:epState,pct:epPct,
+          todo:leafItems.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
+          dev:leafItems.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
+          test:leafItems.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
+          done:epDone,total:epTotal,
+          oe:Math.round(sumF(childFeats,'Microsoft.VSTS.Scheduling.OriginalEstimate')+sumF(leafItems,'Microsoft.VSTS.Scheduling.OriginalEstimate')+gf(ep,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+          cw:Math.round(sumF(childFeats,'Microsoft.VSTS.Scheduling.CompletedWork')+sumF(leafItems,'Microsoft.VSTS.Scheduling.CompletedWork')+gf(ep,'Microsoft.VSTS.Scheduling.CompletedWork')),
+          rw:Math.round(sumF(childFeats,'Microsoft.VSTS.Scheduling.RemainingWork')+sumF(leafItems,'Microsoft.VSTS.Scheduling.RemainingWork')+gf(ep,'Microsoft.VSTS.Scheduling.RemainingWork')),
+          epics:featData
+        };
+      } else {
+        // 3-level or 2-level: L3=stories directly
+        leafItems = l3items;
+        var epDone=leafItems.filter(isDone).length;
+        var epTotal=Math.max(leafItems.length,1);
+        var epPct=pctOf(epDone,epTotal);
+        var epState=epPct>=100?'Done':(gs(ep,'System.State')==='Active'||gs(ep,'System.State')==='In Progress')?'Active':gs(ep,'System.State');
+        return{
+          title:gs(ep,'System.Title'),state:epState,pct:epPct,
+          todo:leafItems.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
+          dev:leafItems.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
+          test:leafItems.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
+          done:epDone,total:epTotal,
+          oe:Math.round(sumF(leafItems,'Microsoft.VSTS.Scheduling.OriginalEstimate')+gf(ep,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+          cw:Math.round(sumF(leafItems,'Microsoft.VSTS.Scheduling.CompletedWork')+gf(ep,'Microsoft.VSTS.Scheduling.CompletedWork')),
+          rw:Math.round(sumF(leafItems,'Microsoft.VSTS.Scheduling.RemainingWork')+gf(ep,'Microsoft.VSTS.Scheduling.RemainingWork')),
+          epics:leafItems.slice(0,10).map(function(s){
+            var sp=isDone(s)?100:(gs(s,'System.State')==='Active'||gs(s,'System.State')==='In Progress')?50:0;
             var sst=gs(s,'System.State');
             return{title:gs(s,'System.Title'),state:sst,pct:sp,
-              todo:(sst==='New'||sst==='To Do')?1:0,
-              dev:(sst==='Active'||sst==='In Progress')?1:0,
-              test:sst==='Testing'?1:0,
-              done:isDone(s)?1:0,total:1,
+              todo:(sst==='New'||sst==='To Do')?1:0,dev:(sst==='Active'||sst==='In Progress')?1:0,
+              test:sst==='Testing'?1:0,done:isDone(s)?1:0,total:1,
               oe:Math.round(gf(s,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
               cw:Math.round(gf(s,'Microsoft.VSTS.Scheduling.CompletedWork')),
-              rw:Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork')),rw_a:Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork'))};
+              rw:Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork')),
+              rw_a:Math.round(gf(s,'Microsoft.VSTS.Scheduling.RemainingWork'))};
           })
         };
-      });
-      var allFeatSt=childFeats.reduce(function(a,f){return a.concat(stories.filter(function(s){return gf(s,'System.Parent')===f.id;}));},[]);
-      var epDone=allFeatSt.filter(isDone).length;
-      var epTotal=Math.max(allFeatSt.length,1);
-      var epPct=pctOf(epDone,epTotal);
-      var epState=epPct>=100?'Done':(gs(ep,'System.State')==='Active'||gs(ep,'System.State')==='In Progress')?'Active':gs(ep,'System.State');
-      return{
-        title:gs(ep,'System.Title'),state:epState,pct:epPct,
-        todo:allFeatSt.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
-        dev:allFeatSt.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
-        test:allFeatSt.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
-        done:epDone,total:epTotal,
-        oe:Math.round(sumF(childFeats,'Microsoft.VSTS.Scheduling.OriginalEstimate')+sumF(allFeatSt,'Microsoft.VSTS.Scheduling.OriginalEstimate')+gf(ep,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
-        cw:Math.round(sumF(childFeats,'Microsoft.VSTS.Scheduling.CompletedWork')+sumF(allFeatSt,'Microsoft.VSTS.Scheduling.CompletedWork')+gf(ep,'Microsoft.VSTS.Scheduling.CompletedWork')),
-        rw:Math.round(sumF(childFeats,'Microsoft.VSTS.Scheduling.RemainingWork')+sumF(allFeatSt,'Microsoft.VSTS.Scheduling.RemainingWork')+gf(ep,'Microsoft.VSTS.Scheduling.RemainingWork')),
-        epics:featData
-      };
+      }
     });
-    var allDesc=childEpics.reduce(function(a,ep){
-      var cf=features.filter(function(f){return gf(f,'System.Parent')===ep.id;});
-      var cs=cf.reduce(function(b,f){return b.concat(stories.filter(function(s){return gf(s,'System.Parent')===f.id;}));},[]);
-      return a.concat(cf).concat(cs);
-    },[]);
-    var iDone=allDesc.filter(isDone).length;
-    var iTotal=Math.max(allDesc.length,1);
+  }
+
+  // ── Build L1 (Initiative/Epic) nodes ──
+  var initData = sortActive(L1).map(function(init){
+    var initId=init.id;
+    var l2data=buildL2Data(initId);
+    // Aggregate all leaf stories under this L1
+    var allLeaf=[];
+    if(initiatives.length>0 && epics.length>0 && features.length>0){
+      var myEpics=epics.filter(function(e){return gf(e,'System.Parent')===initId;});
+      myEpics.forEach(function(ep){
+        var myFeats=features.filter(function(f){return gf(f,'System.Parent')===ep.id;});
+        myFeats.forEach(function(f){
+          stories.filter(function(s){return gf(s,'System.Parent')===f.id;}).forEach(function(s){allLeaf.push(s);});
+        });
+      });
+    } else {
+      var myL2=L2.filter(function(e){return gf(e,'System.Parent')===initId;});
+      myL2.forEach(function(e){
+        L3.filter(function(s){return gf(s,'System.Parent')===e.id;}).forEach(function(s){allLeaf.push(s);});
+        if(L3===stories){/* already added */} // no-op needed
+      });
+      // also direct children if L3=stories
+      if(L2===features){
+        L3.filter(function(s){return gf(s,'System.Parent')===initId;}).forEach(function(s){allLeaf.push(s);});
+      }
+    }
+    var allLeafUniq=allLeaf.filter(function(s,i,a){return a.indexOf(s)===i;});
+    var iDone=allLeafUniq.filter(isDone).length;
+    var iTotal=Math.max(allLeafUniq.length,1);
     var iPct=pctOf(iDone,iTotal);
+    // OE/CW/RW: sum all descendants (epics + features + stories under this init)
+    var allDesc=[];
+    var myEpics2=L2.filter(function(e){return gf(e,'System.Parent')===initId;});
+    allDesc=allDesc.concat(myEpics2);
+    myEpics2.forEach(function(e){
+      var myF=L3===stories?[]:features.filter(function(f){return gf(f,'System.Parent')===e.id;});
+      allDesc=allDesc.concat(myF);
+      myF.forEach(function(f){
+        stories.filter(function(s){return gf(s,'System.Parent')===f.id;}).forEach(function(s){allDesc.push(s);});
+      });
+      if(L3===stories){
+        stories.filter(function(s){return gf(s,'System.Parent')===e.id;}).forEach(function(s){allDesc.push(s);});
+      }
+    });
     return{
       title:gs(init,'System.Title'),state:gs(init,'System.State'),pct:iPct,
-      todo:allDesc.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
-      dev:allDesc.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
-      test:allDesc.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
+      todo:allLeafUniq.filter(function(s){var st=gs(s,'System.State');return st==='New'||st==='To Do';}).length,
+      dev:allLeafUniq.filter(function(s){var st=gs(s,'System.State');return st==='Active'||st==='In Progress';}).length,
+      test:allLeafUniq.filter(function(s){return gs(s,'System.State')==='Testing';}).length,
       done:iDone,total:iTotal,
       oe:Math.round(sumF(allDesc,'Microsoft.VSTS.Scheduling.OriginalEstimate')+gf(init,'Microsoft.VSTS.Scheduling.OriginalEstimate')),
       cw:Math.round(sumF(allDesc,'Microsoft.VSTS.Scheduling.CompletedWork')+gf(init,'Microsoft.VSTS.Scheduling.CompletedWork')),
       rw:Math.round(sumF(allDesc,'Microsoft.VSTS.Scheduling.RemainingWork')+gf(init,'Microsoft.VSTS.Scheduling.RemainingWork')),
-      epics:epicData
+      epics:l2data
     };
   });
 
-  // Completion% = User Story/Task level only (leaf nodes) — Agile standard
-  var leafDone =stories.filter(isDone).length;
-  var leafTotal=Math.max(stories.length,1);
-  var pct      =pctOf(leafDone,leafTotal);
+  // ── Project-level totals (always from actual stories/tasks) ──
+  var allNonBug = initiatives.concat(epics).concat(features).concat(stories);
+  var burned = Math.round(sumF(allNonBug,'Microsoft.VSTS.Scheduling.CompletedWork'));
+  var rw     = Math.round(sumF(allNonBug,'Microsoft.VSTS.Scheduling.RemainingWork'));
+  var oe     = Math.round(sumF(allNonBug,'Microsoft.VSTS.Scheduling.OriginalEstimate'));
 
-  // OE/CW/RW from all non-bug items
-  var allWI=initiatives.concat(epics).concat(features).concat(stories);
-  var burned =Math.round(sumF(allWI,'Microsoft.VSTS.Scheduling.CompletedWork'));
-  var rw     =Math.round(sumF(allWI,'Microsoft.VSTS.Scheduling.RemainingWork'));
-  var oe     =Math.round(sumF(allWI,'Microsoft.VSTS.Scheduling.OriginalEstimate'));
+  // Completion% = CW/OE×100 (anh's formula), fallback to item-count if OE=0
+  // Completion% = CW/OE*100 (anh's formula), fallback to item-count if OE=0
+  var pct=oe>0?Math.min(100,Math.round(burned/oe*100)):pctOf(stories.filter(isDone).length,Math.max(stories.length,1));
 
-  // Capacity = OE (total original estimates)
-  var cap  =oe>0?oe:mems.length*8*20;
-  var util =cap>0?Math.min(100,Math.round(burned/cap*100)):0;
+  var cap  = oe>0?oe:mems.length*8*20;
+  var util = cap>0?Math.min(100,Math.round(burned/cap*100)):0;
 
   // Bug states
   var bugSt={};
   bugs.forEach(function(b){var s=gs(b,'System.State');bugSt[s]=(bugSt[s]||0)+1;});
 
-  // Top Epics by Open Bugs (walk up to Epic ancestor)
+  // Top Epics by Open Bugs
   var epicBugMap={};
   bugs.forEach(function(b){
     var ancestor=findAncestorByType(gf(b,'System.Parent'),'Epic');
@@ -660,7 +746,7 @@ function transformProj(proj,items,mems){
 
   return{
     proj:proj,
-    wi:{total:allWI.length,done:allWI.filter(isDone).length,pct:pct,oe:oe,cw:burned,rw:rw,features:initData},
+    wi:{total:allNonBug.length,done:allNonBug.filter(isDone).length,pct:pct,oe:oe,cw:burned,rw:rw,features:initData},
     bi:{total:bugs.length,states:bugSt},
     members:filteredMems.length,capacity:cap,burned:burned,remaining:rw,util:util,
     critical_bugs:critBugs,_mems:filteredMems,_items:items
@@ -738,23 +824,20 @@ function getWkBounds(wkOpt){
 }
 
 async function buildWeeklyRevisions(data, wkOpt){
-  // wkOpt = {start: Date, end: Date, label: string}
   var bounds=getWkBounds(wkOpt);
   var EXCL_MEMBERS=['TRAN GIANG BAO HUNG','HUNG TRAN GIANG BAO','GIANG BAO HUNG'];
-  var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-  // Collect all members across projects
+  // Member map
   var memberMap={};
   data.forEach(function(d){
-    d._mems.forEach(function(m){
+    (d._mems||[]).forEach(function(m){
       var n=(m.identity&&m.identity.displayName)||'Unknown';
       if(EXCL_MEMBERS.some(function(ex){return n.toUpperCase().indexOf(ex)>=0;}))return;
-      if(!memberMap[n])memberMap[n]={proj:d.proj,cw:Array(7).fill(0),oe:0,rw:0,totalCW:0,totalOE:0,totalRW:0};
+      if(!memberMap[n])memberMap[n]={proj:d.proj,cw:Array(7).fill(0),totalOE:0,totalRW:0};
     });
-    // Snapshot current OE/RW from assigned items
-    d._items.forEach(function(w){
-      var wt=gs(w,'System.WorkItemType');
-      if(['User Story','Task'].indexOf(wt)<0)return;
+    // OE/RW snapshot from Task items assigned to members
+    (d._items||[]).forEach(function(w){
+      if(['User Story','Task'].indexOf(gs(w,'System.WorkItemType'))<0)return;
       var a=w.fields&&w.fields['System.AssignedTo']&&w.fields['System.AssignedTo'].displayName;
       if(a&&memberMap[a]){
         memberMap[a].totalOE+=gf(w,'Microsoft.VSTS.Scheduling.OriginalEstimate');
@@ -763,69 +846,72 @@ async function buildWeeklyRevisions(data, wkOpt){
     });
   });
 
-  // For each project, fetch revisions for User Story/Task items assigned to known members
-  // Limit: only items changed within the target week (optimization)
-  var revisionTasks=[];
+  // Collect Task items to fetch revisions for — 30-day lookback window
+  var lookback=new Date(bounds.start.getTime()-30*86400000);
+  var revTasks=[];
   data.forEach(function(d){
-    var proj=d.proj;
-    var storyItems=d._items.filter(function(w){
-      var wt=gs(w,'System.WorkItemType');
-      if(['User Story','Task'].indexOf(wt)<0)return false;
+    (d._items||[]).forEach(function(w){
+      if(['User Story','Task'].indexOf(gs(w,'System.WorkItemType'))<0)return;
       var a=w.fields&&w.fields['System.AssignedTo']&&w.fields['System.AssignedTo'].displayName;
-      if(!a||!memberMap[a])return false;
-      // Only items changed around the target week (filter for API efficiency)
+      if(!a||!memberMap[a])return;
       var changed=gs(w,'System.ChangedDate');
-      if(!changed)return false;
-      var cd=new Date(changed);
-      return cd>=new Date(bounds.start.getTime()-7*86400000); // changed within 2 weeks
-    });
-    storyItems.forEach(function(w){
-      revisionTasks.push({proj:proj,id:w.id,assignee:w.fields['System.AssignedTo'].displayName});
+      if(changed&&new Date(changed)>=lookback)
+        revTasks.push({proj:d.proj,id:w.id,assignee:a});
     });
   });
 
-  // Fetch revisions in parallel (batched to avoid overwhelming the API)
-  var BATCH=10;
-  for(var bi=0;bi<revisionTasks.length;bi+=BATCH){
-    var batch=revisionTasks.slice(bi,bi+BATCH);
-    var results=await Promise.all(batch.map(function(t){return fetchItemRevisions(t.proj,t.id).then(function(revs){return{t:t,revs:revs};});}));
+  // Fetch revisions in batches of 8 with per-item error handling
+  var BATCH=8;
+  for(var bi=0;bi<revTasks.length;bi+=BATCH){
+    var batch=revTasks.slice(bi,bi+BATCH);
+    var results;
+    try{
+      results=await Promise.all(batch.map(function(t){
+        return fetchItemRevisions(t.proj,t.id)
+          .then(function(revs){return{t:t,revs:revs||[]};})
+          .catch(function(){return{t:t,revs:[]};});
+      }));
+    }catch(e){results=[];}
+
     results.forEach(function(res){
       var assignee=res.t.assignee;
-      if(!memberMap[assignee])return;
+      if(!memberMap[assignee]||!res.revs.length)return;
       var revs=res.revs;
-      // Compare consecutive revisions to find CW delta per day
       for(var ri=1;ri<revs.length;ri++){
-        var prevRev=revs[ri-1];var curRev=revs[ri];
-        var revDate=new Date(curRev.fields&&curRev.fields['System.ChangedDate']||curRev.revisedDate||'');
-        if(isNaN(revDate)||revDate<bounds.start||revDate>bounds.end)continue;
-        var prevCW=( prevRev.fields&&prevRev.fields['Microsoft.VSTS.Scheduling.CompletedWork'])||0;
-        var curCW =(  curRev.fields&&curRev.fields['Microsoft.VSTS.Scheduling.CompletedWork'])||0;
-        var delta=curCW-prevCW;
-        if(delta>0&&delta<24){ // sanity check: >0 and <24h per entry
-          var dayIdx=Math.floor((revDate-bounds.start)/86400000);
-          if(dayIdx>=0&&dayIdx<7)memberMap[assignee].cw[dayIdx]+=delta;
+        var cur=revs[ri];
+        var prev=revs[ri-1];
+        // ADO Revision API: date is in top-level 'revisedDate' field
+        var revDateStr=cur.revisedDate||'';
+        if(!revDateStr)continue;
+        var revDate=new Date(revDateStr);
+        if(isNaN(revDate.getTime()))continue;
+        if(revDate<bounds.start||revDate>bounds.end)continue;
+        // CW delta between consecutive revisions
+        var prevCW=parseFloat((prev.fields&&prev.fields['Microsoft.VSTS.Scheduling.CompletedWork'])||0);
+        var curCW =parseFloat((cur.fields &&cur.fields ['Microsoft.VSTS.Scheduling.CompletedWork'])||0);
+        var delta=Math.round((curCW-prevCW)*100)/100;
+        if(delta>0&&delta<=200){ // positive delta, ≤200h sanity cap
+          var dayIdx=Math.floor((revDate.getTime()-bounds.start.getTime())/86400000);
+          if(dayIdx>=0&&dayIdx<7)
+            memberMap[assignee].cw[dayIdx]=Math.round((memberMap[assignee].cw[dayIdx]+delta)*100)/100;
         }
       }
     });
   }
 
-  // Build final weekly structure
+  // Build output arrays
   var members=[],projs=[],days_data=[];
   Object.keys(memberMap).forEach(function(name){
     var m=memberMap[name];
     members.push(name);
     projs.push(m.proj);
-    // Round each day's CW to 1 decimal
     days_data.push(m.cw.map(function(h){return Math.round(h*10)/10;}));
     m.totalCW=Math.round(m.cw.reduce(function(a,b){return a+b;},0)*10)/10;
     m.totalOE=Math.round(m.totalOE*10)/10;
     m.totalRW=Math.round(m.totalRW*10)/10;
   });
-
   return{members:members,projs:projs,days:days_data,_memberMap:memberMap};
 }
-
-// Wrapper for legacy sync callers - returns structure without CW (fallback)
 function buildWeeklyFromData(data){
   var EXCL_MEMBERS=['TRAN GIANG BAO HUNG','HUNG TRAN GIANG BAO','GIANG BAO HUNG'];
   var members=[],projs=[],days=[];
@@ -911,14 +997,22 @@ function kpiCard(icCls,barCls,icSvg,lbl,val,unit,delta,dc){
 function renderHealth(data){
   var html='';
   data.forEach(function(d){
-    var pct=d.wi.pct,cl=pct>=70?'gc':pct>=40?'ac':'rc';
+    // Completion = CW/OE×100; fallback to item-count if OE=0
+    var pct=d.wi.oe>0?Math.min(100,Math.round(d.wi.cw/d.wi.oe*100)):d.wi.pct;
+    var cl=pct>=70?'gc':pct>=40?'ac':'rc';
     var stc=pct>=70?'ok':pct>=40?'risk':'bad';
     var stIc=pct>=70?'&#9989;':pct>=40?'&#128993;':'&#128308;';
-    html+='<div class="hcard"><div class="hcard-name">'+d.proj+'</div><div class="hcard-pct '+cl+'">'+pct+'%</div><div class="hbar"><div class="hfill '+cl+'" style="width:'+pct+'%"></div></div><div class="hmeta">OE: '+d.wi.oe+'h | CW: '+d.wi.cw+'h | RW: '+d.wi.rw+'h</div><div class="hitems">'+d.wi.total+' items | '+d.wi.done+' done</div><div class="hst '+stc+'">'+stIc+' '+(pct>=70?'On Track':'At Risk')+'</div></div>';
+    html+='<div class="hcard">'
+      +'<div class="hcard-name">'+d.proj+'</div>'
+      +'<div class="hcard-pct '+cl+'">'+pct+'%</div>'
+      +'<div class="hbar"><div class="hfill '+cl+'" style="width:'+pct+'%"></div></div>'
+      +'<div class="hmeta">OE: '+d.wi.oe+'h | CW: '+d.wi.cw+'h | RW: '+d.wi.rw+'h</div>'
+      +'<div class="hitems">'+d.wi.total+' items | '+d.wi.done+' done</div>'
+      +'<div class="hst '+stc+'">'+stIc+' '+(pct>=70?'On Track':pct>=40?'At Risk':'Off Track')+'</div>'
+      +'</div>';
   });
   document.getElementById('health-grid').innerHTML=html;
 }
-
 function renderRes(data){
   var html='<table class="tbl"><thead><tr><th>Project</th><th style="text-align:right">Capacity(h)</th><th style="text-align:right">Burned(h)</th><th style="text-align:right">Remaining(h)</th><th style="min-width:140px">Utilization %</th><th style="text-align:center">Members</th><th style="text-align:center">Health</th></tr></thead><tbody>';
   var gC=0,gB=0,gR=0,gM=0;
@@ -1025,7 +1119,23 @@ function buildProjHTML(d){
 }
 
 function rowMeta(f){
-  return'<div class="counts-grp"><div class="cnt-item"><div class="cnt-v" style="color:#6B7280">'+f.todo+'</div><div class="cnt-l">Todo</div></div><div class="cnt-item"><div class="cnt-v" style="color:var(--ocean)">'+f.dev+'</div><div class="cnt-l">Dev</div></div><div class="cnt-item"><div class="cnt-v" style="color:var(--amber)">'+f.test+'</div><div class="cnt-l">Test</div></div><div class="cnt-item"><div class="cnt-v" style="color:var(--green)">'+f.done+'</div><div class="cnt-l">Done</div></div><div class="cnt-item"><div class="cnt-v">'+f.total+'</div><div class="cnt-l">Total</div></div></div><div class="sep"></div><div class="hrs-grp"><div class="hr-item"><div class="hr-v" style="color:var(--txt2)">'+f.oe+'h</div><div class="hr-l">OE</div></div><div class="hr-item"><div class="hr-v" style="color:var(--green)">'+f.cw+'h</div><div class="hr-l">CW</div></div><div class="hr-item"><div class="hr-v" style="color:var(--amber)">'+f.rw+'h</div><div class="hr-l">RW</div></div></div><div class="sep"></div>';
+  var oeStr=f.oe>0?f.oe+'h':'—';
+  var cwStr=f.cw>0?f.cw+'h':'—';
+  var rwStr=f.rw>0?f.rw+'h':'—';
+  return'<div class="counts-grp">'
+    +'<div class="cnt-item"><div class="cnt-v" style="color:#6B7280">'+f.todo+'</div><div class="cnt-l">Todo</div></div>'
+    +'<div class="cnt-item"><div class="cnt-v" style="color:var(--ocean)">'+f.dev+'</div><div class="cnt-l">Dev</div></div>'
+    +'<div class="cnt-item"><div class="cnt-v" style="color:var(--amber)">'+f.test+'</div><div class="cnt-l">Test</div></div>'
+    +'<div class="cnt-item"><div class="cnt-v" style="color:var(--green)">'+f.done+'</div><div class="cnt-l">Done</div></div>'
+    +'<div class="cnt-item"><div class="cnt-v">'+f.total+'</div><div class="cnt-l">Total</div></div>'
+    +'</div>'
+    +'<div class="sep"></div>'
+    +'<div class="hrs-grp">'
+    +'<div class="hr-item"><div class="hr-v" style="color:var(--txt2)">'+oeStr+'</div><div class="hr-l">OE</div></div>'
+    +'<div class="hr-item"><div class="hr-v" style="color:var(--green)">'+cwStr+'</div><div class="hr-l">CW</div></div>'
+    +'<div class="hr-item"><div class="hr-v" style="color:var(--amber)">'+rwStr+'</div><div class="hr-l">RW</div></div>'
+    +'</div>'
+    +'<div class="sep"></div>';
 }
 function progInline(p,color){return'<div class="prog-inline"><span class="prog-inline-label">Progress</span><div class="prog-inline-bar"><div class="prog-inline-fill" style="width:'+p+'%;background:'+color+'"></div></div><span class="prog-inline-pct '+pctcls(p)+'">'+p+'%</span></div>';}
 function pdKCard(iconCls,barCls,iconSvg,lbl,val,unit,dc,delta,oe,cw,rw){
@@ -1139,7 +1249,8 @@ function renderWkToEl(el,wk,filterNames){
 function showLov(m){var l=document.getElementById('lov');if(l){l.style.display='flex';var t=document.getElementById('ltxt');if(t)t.textContent=m;}}
 function hideLov(){var l=document.getElementById('lov');if(l)l.style.display='none';}
 function showErr(m){var e=document.getElementById('errb');if(e){e.textContent=m;e.style.display='block';}}
-function hideErr(){var e=document.getElementById('errb');if(e)e.style.display='none';}
+
+window.addEventListener('DOMContentLoaded', appInit);
 
 window.addEventListener('DOMContentLoaded', appInit);
 </script>
