@@ -452,9 +452,6 @@ async function loadAll(){
     showLov('Loading '+CFG.projects.length+' projects...');
     var data=await Promise.all(CFG.projects.map(fetchProj));
 
-    // Save cache snapshot (first load of week)
-    saveCacheSnapshot(data);
-
     // Build team data
     var team=buildTeamData(data);
 
