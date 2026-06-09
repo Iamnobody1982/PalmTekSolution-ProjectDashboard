@@ -1,0 +1,23 @@
+{
+  "name": "palmtek-dashboard-server",
+  "version": "1.0.0",
+  "description": "PalmTek Portfolio Dashboard — Express API server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "node -e \"require('./lib/ado'); require('./lib/cache'); console.log('Server modules OK');\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
