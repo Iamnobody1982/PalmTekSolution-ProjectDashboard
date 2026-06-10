@@ -5,20 +5,24 @@ function pctcls(p) { return p >= 70 ? 'pct-g' : p >= 40 ? 'pct-a' : 'pct-r'; }
 function stcls(s) { return ['Done', 'Closed', 'Resolved'].includes(s) ? 'done' : s === 'Active' || s === 'In Progress' ? 'active' : 'new'; }
 function colorOf(cls) { return cls === 'gc' ? 'var(--green)' : cls === 'ac' ? 'var(--amber)' : 'var(--red)'; }
 
+// Azure DevOps-style icons
+// Initiative: purple star/diamond
 const InitIcon = () => (
-  <svg viewBox="0 0 12 12" fill="none" stroke="#fff" strokeWidth="1.5">
-    <polygon points="6,1 11,11 1,11"/>
+  <svg viewBox="0 0 16 16" fill="none">
+    <polygon points="8,1 10,6 15,6 11,9.5 12.5,15 8,12 3.5,15 5,9.5 1,6 6,6" fill="white" opacity="0.9"/>
   </svg>
 );
+// Epic: blue lightning bolt (ADO standard)
 const EpicIcon = () => (
-  <svg viewBox="0 0 10 10" fill="none" stroke="#fff" strokeWidth="1.5">
-    <polygon points="5 1 2 9 8 9"/>
+  <svg viewBox="0 0 16 16" fill="none">
+    <polygon points="9,1 4,9 8,9 7,15 12,7 8,7" fill="white" opacity="0.9"/>
   </svg>
 );
+// Feature: teal flag/bookmark (ADO standard)
 const TaskIcon = () => (
-  <svg viewBox="0 0 9 9" fill="none" stroke="#fff" strokeWidth="1.5">
-    <rect x="1" y="1" width="7" height="7" rx="1"/>
-    <path d="M3 4.5l1.5 1.5L7 3"/>
+  <svg viewBox="0 0 16 16" fill="none">
+    <path d="M3 2h9l-3 4 3 4H3V2z" fill="white" opacity="0.9"/>
+    <line x1="3" y1="2" x2="3" y2="14" stroke="white" strokeWidth="1.5" opacity="0.9"/>
   </svg>
 );
 

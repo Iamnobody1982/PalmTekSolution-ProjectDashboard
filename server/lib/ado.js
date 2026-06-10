@@ -106,6 +106,27 @@ function transformProj(proj, items, mems) {
   const itemById = {};
   items.forEach(w => { itemById[w.id] = w; });
 
+  // All non-bug items — defined early so closures can use it
+  const allNonBug = initiatives.concat(epics).concat(features).concat(stories);
+
+  // Recursive: collect ALL non-bug descendants at any depth (fixes OE/CW/RW at all levels)
+  function getAllDescendants(startId) {
+    const result = [];
+    const visited = new Set();
+    function recurse(id) {
+      allNonBug.forEach(w => {
+        const parentId = gf(w, 'System.Parent');
+        if (parentId === id && !visited.has(w.id)) {
+          visited.add(w.id);
+          result.push(w);
+          recurse(w.id);
+        }
+      });
+    }
+    recurse(startId);
+    return result;
+  }
+
   function findAncestorByType(startId, type) {
     let cur = startId, visited = {}, limit = 10;
     while (cur && limit-- > 0) {
@@ -158,9 +179,9 @@ function transformProj(proj, items, mems) {
             dev: fSt.filter(s => { const st = gs(s, 'System.State'); return st === 'Active' || st === 'In Progress'; }).length,
             test: fSt.filter(s => gs(s, 'System.State') === 'Testing').length,
             done: fDone, total: fTotal,
-            oe: Math.round(sumF(fSt, 'Microsoft.VSTS.Scheduling.OriginalEstimate') + gf(f, 'Microsoft.VSTS.Scheduling.OriginalEstimate')),
-            cw: Math.round(sumF(fSt, 'Microsoft.VSTS.Scheduling.CompletedWork') + gf(f, 'Microsoft.VSTS.Scheduling.CompletedWork')),
-            rw: Math.round(sumF(fSt, 'Microsoft.VSTS.Scheduling.RemainingWork') + gf(f, 'Microsoft.VSTS.Scheduling.RemainingWork')),
+            oe: Math.round(sumF(getAllDescendants(fId), 'Microsoft.VSTS.Scheduling.OriginalEstimate') + gf(f, 'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+            cw: Math.round(sumF(getAllDescendants(fId), 'Microsoft.VSTS.Scheduling.CompletedWork') + gf(f, 'Microsoft.VSTS.Scheduling.CompletedWork')),
+            rw: Math.round(sumF(getAllDescendants(fId), 'Microsoft.VSTS.Scheduling.RemainingWork') + gf(f, 'Microsoft.VSTS.Scheduling.RemainingWork')),
             items: fSt.slice(0, 10).map(s => {
               const sst = gs(s, 'System.State');
               return {
@@ -188,9 +209,9 @@ function transformProj(proj, items, mems) {
           dev: leafItems.filter(s => { const st = gs(s, 'System.State'); return st === 'Active' || st === 'In Progress'; }).length,
           test: leafItems.filter(s => gs(s, 'System.State') === 'Testing').length,
           done: epDone, total: epTotal,
-          oe: Math.round(sumF(childFeats, 'Microsoft.VSTS.Scheduling.OriginalEstimate') + sumF(leafItems, 'Microsoft.VSTS.Scheduling.OriginalEstimate') + gf(ep, 'Microsoft.VSTS.Scheduling.OriginalEstimate')),
-          cw: Math.round(sumF(childFeats, 'Microsoft.VSTS.Scheduling.CompletedWork') + sumF(leafItems, 'Microsoft.VSTS.Scheduling.CompletedWork') + gf(ep, 'Microsoft.VSTS.Scheduling.CompletedWork')),
-          rw: Math.round(sumF(childFeats, 'Microsoft.VSTS.Scheduling.RemainingWork') + sumF(leafItems, 'Microsoft.VSTS.Scheduling.RemainingWork') + gf(ep, 'Microsoft.VSTS.Scheduling.RemainingWork')),
+          oe: Math.round(sumF(getAllDescendants(epId), 'Microsoft.VSTS.Scheduling.OriginalEstimate') + gf(ep, 'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+          cw: Math.round(sumF(getAllDescendants(epId), 'Microsoft.VSTS.Scheduling.CompletedWork') + gf(ep, 'Microsoft.VSTS.Scheduling.CompletedWork')),
+          rw: Math.round(sumF(getAllDescendants(epId), 'Microsoft.VSTS.Scheduling.RemainingWork') + gf(ep, 'Microsoft.VSTS.Scheduling.RemainingWork')),
           epics: featData
         };
       } else {
@@ -205,9 +226,9 @@ function transformProj(proj, items, mems) {
           dev: leafItems.filter(s => { const st = gs(s, 'System.State'); return st === 'Active' || st === 'In Progress'; }).length,
           test: leafItems.filter(s => gs(s, 'System.State') === 'Testing').length,
           done: epDone, total: epTotal,
-          oe: Math.round(sumF(leafItems, 'Microsoft.VSTS.Scheduling.OriginalEstimate') + gf(ep, 'Microsoft.VSTS.Scheduling.OriginalEstimate')),
-          cw: Math.round(sumF(leafItems, 'Microsoft.VSTS.Scheduling.CompletedWork') + gf(ep, 'Microsoft.VSTS.Scheduling.CompletedWork')),
-          rw: Math.round(sumF(leafItems, 'Microsoft.VSTS.Scheduling.RemainingWork') + gf(ep, 'Microsoft.VSTS.Scheduling.RemainingWork')),
+          oe: Math.round(sumF(getAllDescendants(epId), 'Microsoft.VSTS.Scheduling.OriginalEstimate') + gf(ep, 'Microsoft.VSTS.Scheduling.OriginalEstimate')),
+          cw: Math.round(sumF(getAllDescendants(epId), 'Microsoft.VSTS.Scheduling.CompletedWork') + gf(ep, 'Microsoft.VSTS.Scheduling.CompletedWork')),
+          rw: Math.round(sumF(getAllDescendants(epId), 'Microsoft.VSTS.Scheduling.RemainingWork') + gf(ep, 'Microsoft.VSTS.Scheduling.RemainingWork')),
           epics: leafItems.slice(0, 10).map(s => {
             const sst = gs(s, 'System.State');
             return {
@@ -230,8 +251,9 @@ function transformProj(proj, items, mems) {
   const initData = sortActive(L1).map(init => {
     const initId = init.id;
     const l2data = buildL2Data(initId);
-    let allLeaf = [];
 
+    // Completion count: leaf stories via strict parent chain (same as original)
+    let allLeaf = [];
     if (initiatives.length > 0 && epics.length > 0 && features.length > 0) {
       const myEpics = epics.filter(e => gf(e, 'System.Parent') === initId);
       myEpics.forEach(ep => {
@@ -254,19 +276,8 @@ function transformProj(proj, items, mems) {
     const iTotal = Math.max(allLeafUniq.length, 1);
     const iPct = pctOf(iDone, iTotal);
 
-    let allDesc = [];
-    const myEpics2 = L2.filter(e => gf(e, 'System.Parent') === initId);
-    allDesc = allDesc.concat(myEpics2);
-    myEpics2.forEach(e => {
-      const myF = L3 === stories ? [] : features.filter(f => gf(f, 'System.Parent') === e.id);
-      allDesc = allDesc.concat(myF);
-      myF.forEach(f => {
-        stories.filter(s => gf(s, 'System.Parent') === f.id).forEach(s => allDesc.push(s));
-      });
-      if (L3 === stories) {
-        stories.filter(s => gf(s, 'System.Parent') === e.id).forEach(s => allDesc.push(s));
-      }
-    });
+    // OE/CW/RW: recursive descendant traversal (catches Tasks under Stories, etc.)
+    const allDesc = getAllDescendants(initId);
 
     return {
       title: gs(init, 'System.Title'), state: gs(init, 'System.State'), pct: iPct,
@@ -280,8 +291,6 @@ function transformProj(proj, items, mems) {
       epics: l2data
     };
   });
-
-  const allNonBug = initiatives.concat(epics).concat(features).concat(stories);
   const burned = Math.round(sumF(allNonBug, 'Microsoft.VSTS.Scheduling.CompletedWork'));
   const rw = Math.round(sumF(allNonBug, 'Microsoft.VSTS.Scheduling.RemainingWork'));
   const oe = Math.round(sumF(allNonBug, 'Microsoft.VSTS.Scheduling.OriginalEstimate'));

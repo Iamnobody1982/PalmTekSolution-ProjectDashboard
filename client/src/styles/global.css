@@ -165,8 +165,8 @@ body {
 .l1-head { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; background: #F9FAFB; transition: background .1s; flex-wrap: wrap; }
 .l1-head:hover { background: #F3F4F6; }
 .l1-head.open { background: var(--prlight); }
-.l1-ic { width: 20px; height: 20px; border-radius: 5px; background: var(--pr); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.l1-ic svg { width: 12px; height: 12px; }
+.l1-ic { width: 20px; height: 20px; border-radius: 4px; background: #7B3FBE; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.l1-ic svg { width: 13px; height: 13px; }
 .l1-title { font-size: 13px; font-weight: 700; flex: 1; min-width: 120px; }
 .chev { font-size: 10px; color: var(--txt3); transition: transform .2s; flex-shrink: 0; }
 .chev.open { transform: rotate(180deg); }
@@ -175,15 +175,15 @@ body {
 .l2-row { display: flex; align-items: center; gap: 8px; padding: 8px 14px 8px 34px; cursor: pointer; background: #fff; border-bottom: 1px solid #F3F4F6; flex-wrap: wrap; }
 .l2-row:hover { background: #FAFAFA; }
 .l2-row.open { background: #EFF6FF; }
-.l2-ic { width: 18px; height: 18px; border-radius: 4px; background: var(--ocean); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.l2-ic svg { width: 10px; height: 10px; }
+.l2-ic { width: 18px; height: 18px; border-radius: 4px; background: #0078D4; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.l2-ic svg { width: 11px; height: 11px; }
 .l2-title { font-size: 12px; font-weight: 600; flex: 1; min-width: 100px; }
 .l3-wrap { display: none; }
 .l3-wrap.open { display: block; }
 .l3-row { display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 62px; background: #FAFAFA; border-bottom: 1px solid #F3F4F6; flex-wrap: wrap; }
 .l3-row:last-child { border-bottom: none; }
-.l3-ic { width: 16px; height: 16px; border-radius: 3px; background: var(--amber); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.l3-ic svg { width: 9px; height: 9px; }
+.l3-ic { width: 16px; height: 16px; border-radius: 3px; background: #009CCC; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.l3-ic svg { width: 10px; height: 10px; }
 .l3-title { font-size: 12px; flex: 1; min-width: 100px; color: var(--txt2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
 
 /* COUNTS GROUP */

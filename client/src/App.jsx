@@ -100,7 +100,7 @@ export default function App() {
                 </div>
                 <div className="card">
                   <div className="sec">🏆 Team Performance</div>
-                  <TeamPerformance team={team} showProject={true} />
+                  <TeamPerformance team={team} showProject={false} />
                 </div>
               </div>
               <WeeklyActivity filterMembers={null} />
