@@ -6,70 +6,104 @@ function stcls(s) { return ['Done', 'Closed', 'Resolved'].includes(s) ? 'done' :
 function colorOf(cls) { return cls === 'gc' ? 'var(--green)' : cls === 'ac' ? 'var(--amber)' : 'var(--red)'; }
 
 // Azure DevOps-style icons
-// Initiative: purple star/diamond
 const InitIcon = () => (
   <svg viewBox="0 0 16 16" fill="none">
     <polygon points="8,1 10,6 15,6 11,9.5 12.5,15 8,12 3.5,15 5,9.5 1,6 6,6" fill="white" opacity="0.9"/>
   </svg>
 );
-// Epic: blue lightning bolt (ADO standard)
 const EpicIcon = () => (
   <svg viewBox="0 0 16 16" fill="none">
     <polygon points="9,1 4,9 8,9 7,15 12,7 8,7" fill="white" opacity="0.9"/>
   </svg>
 );
-// Feature: teal flag/bookmark (ADO standard)
-const TaskIcon = () => (
+const FeatureIcon = () => (
   <svg viewBox="0 0 16 16" fill="none">
     <path d="M3 2h9l-3 4 3 4H3V2z" fill="white" opacity="0.9"/>
     <line x1="3" y1="2" x2="3" y2="14" stroke="white" strokeWidth="1.5" opacity="0.9"/>
   </svg>
 );
 
-function RowMeta({ f }) {
+/* Shared right-side meta: counts | sep | hrs | sep — renders inside the grid */
+function CountsCell({ f }) {
   return (
-    <>
-      <div className="counts-grp">
-        <div className="cnt-item"><div className="cnt-v" style={{ color: '#6B7280' }}>{f.todo}</div><div className="cnt-l">Todo</div></div>
-        <div className="cnt-item"><div className="cnt-v" style={{ color: 'var(--ocean)' }}>{f.dev}</div><div className="cnt-l">Dev</div></div>
-        <div className="cnt-item"><div className="cnt-v" style={{ color: 'var(--amber)' }}>{f.test}</div><div className="cnt-l">Test</div></div>
-        <div className="cnt-item"><div className="cnt-v" style={{ color: 'var(--green)' }}>{f.done}</div><div className="cnt-l">Done</div></div>
-        <div className="cnt-item"><div className="cnt-v">{f.total}</div><div className="cnt-l">Total</div></div>
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'flex-end' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#6B7280', lineHeight: 1 }}>{f.todo}</div>
+        <div style={{ fontSize: 9, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.5px', marginTop: 1 }}>Todo</div>
       </div>
-      <div className="sep" />
-      <div className="hrs-grp">
-        <div className="hr-item"><div className="hr-v" style={{ color: 'var(--txt2)' }}>{f.oe > 0 ? f.oe + 'h' : '—'}</div><div className="hr-l">OE</div></div>
-        <div className="hr-item"><div className="hr-v" style={{ color: 'var(--green)' }}>{f.cw > 0 ? f.cw + 'h' : '—'}</div><div className="hr-l">CW</div></div>
-        <div className="hr-item"><div className="hr-v" style={{ color: 'var(--amber)' }}>{f.rw > 0 ? f.rw + 'h' : '—'}</div><div className="hr-l">RW</div></div>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ocean)', lineHeight: 1 }}>{f.dev}</div>
+        <div style={{ fontSize: 9, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.5px', marginTop: 1 }}>Dev</div>
       </div>
-      <div className="sep" />
-    </>
-  );
-}
-
-function ProgInline({ p }) {
-  const cls = pfcls(p);
-  const color = colorOf(cls);
-  return (
-    <div className="prog-inline">
-      <span className="prog-inline-label">Progress</span>
-      <div className="prog-inline-bar">
-        <div className="prog-inline-fill" style={{ width: p + '%', background: color }} />
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--amber)', lineHeight: 1 }}>{f.test}</div>
+        <div style={{ fontSize: 9, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.5px', marginTop: 1 }}>Test</div>
       </div>
-      <span className={'prog-inline-pct ' + pctcls(p)}>{p}%</span>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--green)', lineHeight: 1 }}>{f.done}</div>
+        <div style={{ fontSize: 9, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.5px', marginTop: 1 }}>Done</div>
+      </div>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1 }}>{f.total}</div>
+        <div style={{ fontSize: 9, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.5px', marginTop: 1 }}>Total</div>
+      </div>
     </div>
   );
 }
 
+function HrsCell({ f }) {
+  return (
+    <div style={{ display: 'flex', gap: 10, alignItems: 'center', justifyContent: 'flex-end' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--txt2)', lineHeight: 1 }}>{f.oe > 0 ? f.oe + 'h' : '—'}</div>
+        <div style={{ fontSize: 9, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.5px', marginTop: 1 }}>OE</div>
+      </div>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--green)', lineHeight: 1 }}>{f.cw > 0 ? f.cw + 'h' : '—'}</div>
+        <div style={{ fontSize: 9, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.5px', marginTop: 1 }}>CW</div>
+      </div>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--amber)', lineHeight: 1 }}>{f.rw > 0 ? f.rw + 'h' : '—'}</div>
+        <div style={{ fontSize: 9, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.5px', marginTop: 1 }}>RW</div>
+      </div>
+    </div>
+  );
+}
+
+function ProgCell({ p }) {
+  const cls = pfcls(p);
+  const color = colorOf(cls);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ flex: 1, height: 5, background: '#E5E7EB', borderRadius: 3, overflow: 'hidden', minWidth: 60 }}>
+        <div style={{ width: p + '%', height: '100%', background: color, borderRadius: 3 }} />
+      </div>
+      <span style={{ fontSize: 11, fontWeight: 700, color, flexShrink: 0, minWidth: 32, textAlign: 'right' }}>{p}%</span>
+    </div>
+  );
+}
+
+/* Divider cell */
+function Sep() {
+  return <div style={{ width: 1, background: 'var(--bdr)', alignSelf: 'stretch', margin: '4px 0' }} />;
+}
+
 function L3Row({ item }) {
   const sc = stcls(item.state);
+  const fp = item.total > 0 ? Math.round(item.done / item.total * 100) : item.pct || 0;
   return (
-    <div className="l3-row">
-      <div className="l3-ic"><TaskIcon /></div>
-      <span className="l3-title" title={item.title}>{item.title}</span>
-      <span className={'state-pill ' + sc}>{item.state}</span>
-      <RowMeta f={item} />
-      <ProgInline p={item.pct} />
+    <div className="l3-head-indent">
+      <div className="acc-row">
+        <div className="l3-ic"><FeatureIcon /></div>
+        <span className="l3-title" title={item.title}>{item.title}</span>
+        <span className={'state-pill ' + sc} style={{ justifySelf: 'start' }}>{item.state}</span>
+        <CountsCell f={item} />
+        <Sep />
+        <HrsCell f={item} />
+        <Sep />
+        <ProgCell p={fp} />
+        <span />
+      </div>
     </div>
   );
 }
@@ -78,16 +112,22 @@ function L2Row({ ep, prefix }) {
   const [open, setOpen] = useState(false);
   const esc = stcls(ep.state);
   const items = ep.items || ep.epics || [];
+  const fp = ep.total > 0 ? Math.round(ep.done / ep.total * 100) : ep.pct || 0;
 
   return (
     <div>
-      <div className={'l2-row' + (open ? ' open' : '')} onClick={() => setOpen(o => !o)}>
-        <div className="l2-ic"><EpicIcon /></div>
-        <span className="l2-title" title={ep.title}>{ep.title}</span>
-        <span className={'state-pill ' + esc}>{ep.state}</span>
-        <RowMeta f={ep} />
-        <ProgInline p={ep.pct} />
-        <span className={'chev' + (open ? ' open' : '')}>▼</span>
+      <div className={'l2-head-indent' + (open ? ' open' : '')} onClick={() => setOpen(o => !o)}>
+        <div className="acc-row">
+          <div className="l2-ic"><EpicIcon /></div>
+          <span className="l2-title" title={ep.title}>{ep.title}</span>
+          <span className={'state-pill ' + esc} style={{ justifySelf: 'start' }}>{ep.state}</span>
+          <CountsCell f={ep} />
+          <Sep />
+          <HrsCell f={ep} />
+          <Sep />
+          <ProgCell p={fp} />
+          <span className={'chev' + (open ? ' open' : '')}>▼</span>
+        </div>
       </div>
       {open && (
         <div className="l3-wrap open">
@@ -110,12 +150,17 @@ function L1Row({ f, idx }) {
   return (
     <div className="init-card">
       <div className={'l1-head' + (open ? ' open' : '')} onClick={() => setOpen(o => !o)}>
-        <div className="l1-ic"><InitIcon /></div>
-        <span className="l1-title" title={f.title}>{f.title}</span>
-        <span className={'state-pill ' + sc}>{f.state}</span>
-        <RowMeta f={f} />
-        <ProgInline p={fp} />
-        <span className={'chev' + (open ? ' open' : '')}>▼</span>
+        <div className="acc-row">
+          <div className="l1-ic"><InitIcon /></div>
+          <span className="l1-title" title={f.title}>{f.title}</span>
+          <span className={'state-pill ' + sc} style={{ justifySelf: 'start' }}>{f.state}</span>
+          <CountsCell f={f} />
+          <Sep />
+          <HrsCell f={f} />
+          <Sep />
+          <ProgCell p={fp} />
+          <span className={'chev' + (open ? ' open' : '')}>▼</span>
+        </div>
       </div>
       {open && (
         <div className="l2-wrap open">

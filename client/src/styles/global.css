@@ -160,31 +160,46 @@ body {
 .wksel { font-family: 'Inter', sans-serif; font-size: 12px; padding: 4px 8px; border: 1px solid var(--bdr); border-radius: 5px; color: var(--txt); background: #fff; cursor: pointer; }
 
 /* INITIATIVE ACCORDION */
+/*
+  Grid columns (shared across L1/L2/L3):
+  [indent-space] [icon] [title flex] [state 100px] [counts 220px] [sep] [hrs 130px] [sep] [progress 220px] [chev 20px]
+  Indentation applied via padding-left on the row itself, icon always at same grid col.
+*/
 .init-list { display: flex; flex-direction: column; gap: 6px; }
 .init-card { border: 1px solid var(--bdr); border-radius: 8px; overflow: hidden; }
-.l1-head { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; background: #F9FAFB; transition: background .1s; flex-wrap: wrap; }
+
+/* Shared grid for all accordion rows */
+.acc-row {
+  display: grid;
+  grid-template-columns: 24px 1fr 100px 220px 8px 130px 8px 220px 20px;
+  align-items: center;
+  gap: 0 8px;
+  min-width: 0;
+}
+
+.l1-head { padding: 10px 14px; cursor: pointer; background: #F9FAFB; transition: background .1s; }
 .l1-head:hover { background: #F3F4F6; }
 .l1-head.open { background: var(--prlight); }
 .l1-ic { width: 20px; height: 20px; border-radius: 4px; background: #7B3FBE; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .l1-ic svg { width: 13px; height: 13px; }
-.l1-title { font-size: 13px; font-weight: 700; flex: 1; min-width: 120px; }
-.chev { font-size: 10px; color: var(--txt3); transition: transform .2s; flex-shrink: 0; }
+.l1-title { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.chev { font-size: 10px; color: var(--txt3); transition: transform .2s; justify-self: end; }
 .chev.open { transform: rotate(180deg); }
 .l2-wrap { display: none; border-top: 1px solid var(--bdr); }
 .l2-wrap.open { display: block; }
-.l2-row { display: flex; align-items: center; gap: 8px; padding: 8px 14px 8px 34px; cursor: pointer; background: #fff; border-bottom: 1px solid #F3F4F6; flex-wrap: wrap; }
-.l2-row:hover { background: #FAFAFA; }
-.l2-row.open { background: #EFF6FF; }
+.l2-head-indent { padding: 8px 14px 8px 34px; cursor: pointer; background: #fff; border-bottom: 1px solid #F3F4F6; }
+.l2-head-indent:hover { background: #FAFAFA; }
+.l2-head-indent.open { background: #EFF6FF; }
 .l2-ic { width: 18px; height: 18px; border-radius: 4px; background: #0078D4; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .l2-ic svg { width: 11px; height: 11px; }
-.l2-title { font-size: 12px; font-weight: 600; flex: 1; min-width: 100px; }
+.l2-title { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .l3-wrap { display: none; }
 .l3-wrap.open { display: block; }
-.l3-row { display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 62px; background: #FAFAFA; border-bottom: 1px solid #F3F4F6; flex-wrap: wrap; }
-.l3-row:last-child { border-bottom: none; }
+.l3-head-indent { padding: 6px 14px 6px 62px; background: #FAFAFA; border-bottom: 1px solid #F3F4F6; }
+.l3-head-indent:last-child { border-bottom: none; }
 .l3-ic { width: 16px; height: 16px; border-radius: 3px; background: #009CCC; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .l3-ic svg { width: 10px; height: 10px; }
-.l3-title { font-size: 12px; flex: 1; min-width: 100px; color: var(--txt2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
+.l3-title { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--txt2); min-width: 0; }
 
 /* COUNTS GROUP */
 .counts-grp { display: flex; gap: 12px; flex-shrink: 0; }

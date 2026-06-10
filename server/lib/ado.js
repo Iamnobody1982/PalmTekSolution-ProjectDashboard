@@ -440,7 +440,7 @@ async function buildWeeklyRevisions(pat, data, wkOpt) {
       for (let ri = 1; ri < revs.length; ri++) {
         const cur = revs[ri];
         const prev = revs[ri - 1];
-        const revDateStr = cur.revisedDate || '';
+        const revDateStr = (cur.fields && cur.fields['System.ChangedDate']) || cur.revisedDate || '';
         if (!revDateStr) continue;
         const revDate = new Date(revDateStr);
         if (isNaN(revDate.getTime())) continue;
